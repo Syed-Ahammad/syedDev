@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test";
 
-test("home page renders", async ({ page }) => {
+test("home page renders hero and navbar", async ({ page }) => {
   await page.goto("/");
+
+  await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /to get started, edit the page\.tsx file\./i }),
+    page.getByRole("heading", { level: 1, name: /i build .* reliable web apps/i }),
   ).toBeVisible();
+  await expect(page.getByRole("link", { name: /start a project/i })).toBeVisible();
 });
