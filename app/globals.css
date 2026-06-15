@@ -14,6 +14,17 @@
   --color-gold: #e8b34b;
 
   --radius-card: 1rem;
+
+  --animate-marquee: marquee 26s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* Dark = brand default. `:root` (no class) renders the brand look even before next-themes hydrates. */
