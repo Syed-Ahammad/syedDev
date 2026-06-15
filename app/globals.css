@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Class-based dark mode so next-themes (added in step 2.2a) can toggle by adding `.dark` to <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Brand accents — same in both themes */
+  --color-coral: #ff6b5c;
+  --color-teal: #5ec4b6;
+  --color-gold: #e8b34b;
+
+  --radius-card: 1rem;
 }
 
+/* Dark = brand default. `:root` (no class) renders the brand look even before next-themes hydrates. */
+:root {
+  --background: #0b1622;
+  --surface: #13243a;
+  --foreground: #ece7df;
+  --muted: #8ea0b2;
+  --border: rgba(236, 231, 223, 0.12);
+}
+
+.light {
+  --background: #f5f1ea;
+  --surface: #ffffff;
+  --foreground: #0b1622;
+  --muted: #4b5d72;
+  --border: rgba(11, 22, 34, 0.12);
+}
+
+/* Map theme-aware CSS variables onto Tailwind utility tokens so `bg-background`, `text-foreground`,
+   `bg-surface`, `text-muted`, `border-border` resolve correctly under either theme. */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --color-muted: var(--muted);
+  --color-border: var(--border);
 }

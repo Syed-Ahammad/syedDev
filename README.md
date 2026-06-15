@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# syed.dev — Portfolio Website & Admin Dashboard
 
-## Getting Started
+A personal portfolio platform: a public site that wins clients (projects, services, about, contact) and a private admin dashboard where Syed manages projects, reads client messages (leads), and updates his profile — without touching code.
 
-First, run the development server:
+> **Status:** Front-end design phase ✅ — back-end documented, not yet built.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## What's in this repo
+
+```
+Syed-portfolio/
+├── docs/                     # Full project documentation (start here)
+├── frontend/
+│   ├── index.html            # Public portfolio (design reference)
+│   └── admin-dashboard.html  # Admin dashboard (design reference)
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quick links
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Doc | What it covers |
+|-----|----------------|
+| [project-scope.md](docs/project-scope.md) | Goals, in/out of v1 |
+| [requirements.md](docs/requirements.md) | Functional & non-functional requirements |
+| [features-list.md](docs/features-list.md) | Every feature, by priority |
+| [user-flow.md](docs/user-flow.md) | Visitor and admin journeys |
+| [database-schema.md](docs/database-schema.md) | MongoDB collections (Mongoose) |
+| [api-structure.md](docs/api-structure.md) | API routes & contracts |
+| [tech-stack.md](docs/tech-stack.md) | Tools + design tokens |
+| [folder-structure.md](docs/folder-structure.md) | Codebase layout |
+| [deployment-guide.md](docs/deployment-guide.md) | Ship it live (Vercel + Atlas) |
+| [testing-checklist.md](docs/testing-checklist.md) | Pre-launch checks |
+| [changelog.md](docs/changelog.md) | What changed, when |
+| [roadmap.md](docs/roadmap.md) | Small-step build plan + future |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Why an admin dashboard for a portfolio?
 
-## Learn More
+Because the portfolio is a **lead machine**, not a brochure:
+- Every contact-form submission is saved as a **lead** (not lost in email).
+- Projects are **data**, so adding a new one takes 2 minutes, no redeploy.
+- Visit stats show **which projects clients actually look at**.
 
-To learn more about Next.js, take a look at the following resources:
+## Tech stack (summary)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Next.js (App Router) · React · TypeScript · Tailwind CSS · MongoDB Atlas · Mongoose · NextAuth · Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Build order — small steps
 
-## Deploy on Vercel
+1. ✅ **Design** — public site + admin dashboard (this phase)
+2. ⏳ **Front-end build** — convert to Next.js components (one section at a time)
+3. ⏳ **Back-end** — models → public API → auth → admin API (one route at a time)
+4. ⏳ **Integration & testing**
+5. ⏳ **Deploy**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [roadmap.md](docs/roadmap.md) for the full step-by-step plan.
