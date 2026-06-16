@@ -15,4 +15,11 @@ test("home page renders hero and navbar", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 2, name: /what it adds up to/i }),
   ).toBeVisible();
+
+  await page
+    .getByRole("heading", { level: 2, name: /what people .* say/i })
+    .scrollIntoViewIfNeeded();
+  await expect(
+    page.getByRole("heading", { level: 2, name: /what people .* say/i }),
+  ).toBeVisible();
 });

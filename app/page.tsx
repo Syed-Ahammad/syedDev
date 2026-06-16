@@ -5,6 +5,7 @@ import { StackStrip } from "@/components/public/StackStrip";
 import { FeaturedProjects } from "@/components/public/FeaturedProjects";
 import { Services } from "@/components/public/Services";
 import { Stats } from "@/components/public/Stats";
+import { EndorsementsWall } from "@/components/public/EndorsementsWall";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
         <FeaturedProjects />
         <Services />
         <Stats />
+        <EndorsementsWall />
       </main>
     </>
   );

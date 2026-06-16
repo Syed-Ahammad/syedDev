@@ -9,3 +9,11 @@ export type Project = {
   status: ProjectStatus;
   order: number;
 };
+
+export type Endorsement = {
+  id: string;
+  skill: string;
+  text: string;
+  endorserName: string;
+  endorserRole: string;
+};
