@@ -178,6 +178,44 @@ test("about page renders story, principles and CTA", async ({ page }) => {
   await expect(page).toHaveURL(/\/contact$/);
 });
 
+test("login page validates and accepts a demo prefill", async ({ page }) => {
+  await page.goto("/login");
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: /welcome back/i }),
+  ).toBeVisible();
+
+  const form = page.locator("form").filter({ hasText: /sign in/i });
+  await form.getByRole("button", { name: /sign in/i }).click();
+  await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
+
+  await form.getByRole("button", { name: /demo user/i }).click();
+  await expect(form.getByRole("status")).toContainText(
+    /credentials accepted/i,
+  );
+});
+
+test("register page validates and shows confirmation message", async ({ page }) => {
+  await page.goto("/register");
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: /one account, the whole community/i }),
+  ).toBeVisible();
+
+  const form = page.locator("form").filter({ hasText: /create account/i });
+  await form.getByLabel(/your name/i).fill("Test Visitor");
+  await form.getByLabel(/^email$/i).fill("visitor@example.com");
+  await form.getByLabel(/^password$/i).fill("short");
+  await form.getByLabel(/confirm password/i).fill("short");
+  await form.getByRole("button", { name: /create account/i }).click();
+  await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
+
+  await form.getByLabel(/^password$/i).fill("longenough");
+  await form.getByLabel(/confirm password/i).fill("longenough");
+  await form.getByRole("button", { name: /create account/i }).click();
+  await expect(form.getByRole("status")).toContainText(/registration lands/i);
+});
+
 test("contact page submits the form successfully", async ({ page }) => {
   await page.goto("/contact");
 
