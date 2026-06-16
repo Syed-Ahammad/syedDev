@@ -1,5 +1,12 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/public/ThemeToggle";
+import { ProfileDropdown } from "@/components/ui/ProfileDropdown";
+
+const MENU_ITEMS = [
+  { label: "View profile", href: "/admin/profile" },
+  { label: "Switch to user view", href: "/dashboard" },
+  { label: "Visit public site", href: "/" },
+];
 
 export function AdminTopbar() {
   return (
@@ -27,30 +34,14 @@ export function AdminTopbar() {
       </div>
 
       <div className="flex items-center gap-3">
-        <div
-          aria-label="Signed in as"
-          className="hidden flex-col items-end leading-tight sm:flex"
-        >
-          <span className="font-display text-sm font-medium text-foreground">
-            Syed Ahammad
-          </span>
-          <span className="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-muted">
-            admin@syed.dev
-          </span>
-        </div>
-        <span
-          aria-hidden="true"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-coral font-display text-sm font-semibold text-background"
-        >
-          SA
-        </span>
         <ThemeToggle />
-        <Link
-          href="/"
-          className="hidden rounded-full border border-border px-3 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:border-coral hover:text-coral sm:inline-flex"
-        >
-          Sign out
-        </Link>
+        <ProfileDropdown
+          name="Syed Ahammad"
+          email="admin@syed.dev"
+          initials="SA"
+          accent="coral"
+          items={MENU_ITEMS}
+        />
       </div>
     </header>
   );

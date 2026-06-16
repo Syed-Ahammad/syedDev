@@ -258,6 +258,34 @@ test("dashboard shell renders sidebar with 5 items and marks Overview active", a
   );
 });
 
+test("profile dropdown opens, lists items, and closes on Escape", async ({
+  page,
+}) => {
+  await page.goto("/dashboard");
+
+  const trigger = page.getByRole("button", {
+    name: /signed in as demo user/i,
+  });
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+  const menu = page.getByRole("menu", { name: /profile menu/i });
+  await expect(
+    menu.getByRole("menuitem", { name: /view profile/i }),
+  ).toBeVisible();
+  await expect(
+    menu.getByRole("menuitem", { name: /visit public site/i }),
+  ).toBeVisible();
+  await expect(
+    menu.getByRole("menuitem", { name: /sign out/i }),
+  ).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+});
+
 test("login page validates and accepts a demo prefill", async ({ page }) => {
   await page.goto("/login");
 
