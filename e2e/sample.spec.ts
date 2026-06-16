@@ -178,6 +178,86 @@ test("about page renders story, principles and CTA", async ({ page }) => {
   await expect(page).toHaveURL(/\/contact$/);
 });
 
+test("admin shell renders sidebar with 7 items and marks Overview active", async ({
+  page,
+}) => {
+  await page.goto("/admin");
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: /admin shell is live/i }),
+  ).toBeVisible();
+
+  const desktopSidebar = page.getByRole("complementary", { name: "Admin" });
+  const sectionsNav = desktopSidebar.getByRole("navigation", {
+    name: /admin sections$/i,
+  });
+  const links = sectionsNav.getByRole("link");
+  await expect(links).toHaveCount(7);
+
+  const expected = [
+    "Overview",
+    "Projects",
+    "Leads",
+    "Blog",
+    "Endorsements",
+    "Users",
+    "Analytics",
+  ];
+  for (const label of expected) {
+    await expect(
+      sectionsNav.getByRole("link", { name: new RegExp(label, "i") }),
+    ).toBeVisible();
+  }
+
+  await expect(sectionsNav.locator("[aria-current='page']")).toHaveText(
+    /overview/i,
+  );
+
+  await expect(page.getByLabel(/signed in as/i)).toContainText(/syed/i);
+  await expect(page.getByLabel(/signed in as/i)).toContainText(
+    /admin@syed\.dev/i,
+  );
+});
+
+test("dashboard shell renders sidebar with 5 items and marks Overview active", async ({
+  page,
+}) => {
+  await page.goto("/dashboard");
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: /welcome back, demo user/i }),
+  ).toBeVisible();
+
+  const desktopSidebar = page.getByRole("complementary", { name: "Dashboard" });
+  const sectionsNav = desktopSidebar.getByRole("navigation", {
+    name: /dashboard sections$/i,
+  });
+  const links = sectionsNav.getByRole("link");
+  await expect(links).toHaveCount(5);
+
+  const expected = [
+    "Overview",
+    "Bookmarks",
+    "Endorsements",
+    "Quote requests",
+    "Profile",
+  ];
+  for (const label of expected) {
+    await expect(
+      sectionsNav.getByRole("link", { name: new RegExp(label, "i") }),
+    ).toBeVisible();
+  }
+
+  await expect(sectionsNav.locator("[aria-current='page']")).toHaveText(
+    /overview/i,
+  );
+
+  await expect(page.getByLabel(/signed in as/i)).toContainText(/demo user/i);
+  await expect(page.getByLabel(/signed in as/i)).toContainText(
+    /demo@syed\.dev/i,
+  );
+});
+
 test("login page validates and accepts a demo prefill", async ({ page }) => {
   await page.goto("/login");
 
