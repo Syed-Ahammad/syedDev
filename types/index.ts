@@ -34,4 +34,5 @@ export type BlogPost = {
   tag: string;
   publishedAt: string;
   readMinutes: number;
+  body: string;
 };
