@@ -51,4 +51,74 @@ export const MOCK_PROJECTS: Project[] = [
     status: "live",
     order: 5,
   },
+  {
+    slug: "cafe-loyalty",
+    name: "Cafe Loyalty",
+    tagline:
+      "QR-code stamp cards and birthday rewards for independent coffee shops — no app install needed.",
+    type: "SaaS",
+    stack: ["Next.js", "MongoDB", "Tailwind"],
+    status: "in-progress",
+    order: 6,
+  },
+  {
+    slug: "skillbase",
+    name: "Skillbase",
+    tagline:
+      "Endorsements and credentials directory for trades — plumbers, electricians, fit-out crews — searchable by skill.",
+    type: "Marketplace",
+    stack: ["Next.js", "MongoDB", "NextAuth"],
+    status: "in-progress",
+    order: 7,
+  },
+  {
+    slug: "stockwatch-api",
+    name: "Stockwatch API",
+    tagline:
+      "REST endpoints to sync stock levels between Shopify, a warehouse SQL DB and a POS — webhook-driven.",
+    type: "API",
+    stack: ["Node.js", "TypeScript", "REST"],
+    status: "live",
+    order: 8,
+  },
+  {
+    slug: "menu-board",
+    name: "Menu Board",
+    tagline:
+      "Digital menu boards for restaurants — single CMS, multiple TVs, instant price updates per location.",
+    type: "Internal tool",
+    stack: ["Next.js", "MongoDB", "Tailwind"],
+    status: "live",
+    order: 9,
+  },
+  {
+    slug: "freelance-brief",
+    name: "Freelance Brief",
+    tagline:
+      "Single-page landing that turns a developer pitch into a bookable discovery call with budget filters.",
+    type: "Landing",
+    stack: ["Next.js", "Tailwind"],
+    status: "live",
+    order: 10,
+  },
+  {
+    slug: "syed-dev",
+    name: "syed.dev",
+    tagline:
+      "This site — portfolio plus a small community layer for endorsements, bookmarks and quotes.",
+    type: "Portfolio",
+    stack: ["Next.js", "MongoDB", "NextAuth", "Tailwind"],
+    status: "in-progress",
+    order: 11,
+  },
+  {
+    slug: "ops-notebook",
+    name: "Ops Notebook",
+    tagline:
+      "Daily ops checklist for kitchens and stores — opening, closing, cash count, signed off on each shift.",
+    type: "Internal tool",
+    stack: ["React", "Node.js", "MongoDB"],
+    status: "draft",
+    order: 12,
+  },
 ];

@@ -10,6 +10,15 @@ export type Project = {
   order: number;
 };
 
+export type ProjectDetail = {
+  problem: string;
+  approach: string;
+  outcome: string;
+  year: number;
+  role: string;
+  links?: { label: string; href: string }[];
+};
+
 export type Endorsement = {
   id: string;
   skill: string;

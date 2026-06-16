@@ -1,0 +1,33 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › e2e\sample.spec.ts:71:5 › projects page filters, sorts, paginates via URL (8.2s)
+
+
+  1) [chromium] › e2e\sample.spec.ts:71:5 › projects page filters, sorts, paginates via URL ────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('article h3').first()
+    Expected pattern: [32m/cafe loyalty/i[39m
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('article h3').first()[22m
+
+
+      82 |   await page.goto("/projects?sort=alpha");
+      83 |   const firstCardName = page.locator("article h3").first();
+    > 84 |   await expect(firstCardName).toContainText(/cafe loyalty/i);
+         |                               ^
+      85 |
+      86 |   await page.goto("/projects?page=2");
+      87 |   await expect(page.getByText(/showing 4 of 12 projects/i)).toBeVisible();
+        at D:\syedDev\e2e\sample.spec.ts:84:31
+
+    Error Context: test-results\sample-projects-page-filters-sorts-paginates-via-URL-chromium\error-context.md
+
+  1 failed
+    [chromium] › e2e\sample.spec.ts:71:5 › projects page filters, sorts, paginates via URL ─────────
