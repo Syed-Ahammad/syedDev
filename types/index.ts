@@ -17,3 +17,12 @@ export type Endorsement = {
   endorserName: string;
   endorserRole: string;
 };
+
+export type BlogPost = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  tag: string;
+  publishedAt: string;
+  readMinutes: number;
+};

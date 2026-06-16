@@ -6,6 +6,7 @@ import { FeaturedProjects } from "@/components/public/FeaturedProjects";
 import { Services } from "@/components/public/Services";
 import { Stats } from "@/components/public/Stats";
 import { EndorsementsWall } from "@/components/public/EndorsementsWall";
+import { BlogPreview } from "@/components/public/BlogPreview";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
         <Services />
         <Stats />
         <EndorsementsWall />
+        <BlogPreview />
       </main>
     </>
   );
