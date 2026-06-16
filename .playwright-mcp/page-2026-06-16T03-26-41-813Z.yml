@@ -1,0 +1,425 @@
+- generic [active] [ref=e1]:
+  - navigation "Primary" [ref=e2]:
+    - link "syed.dev" [ref=e3] [cursor=pointer]:
+      - /url: /
+    - list [ref=e4]:
+      - listitem [ref=e5]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+      - listitem [ref=e7]:
+        - link "Projects" [ref=e8] [cursor=pointer]:
+          - /url: /projects
+      - listitem [ref=e9]:
+        - link "Blog" [ref=e10] [cursor=pointer]:
+          - /url: /blog
+      - listitem [ref=e11]:
+        - link "About" [ref=e12] [cursor=pointer]:
+          - /url: /about
+      - listitem [ref=e13]:
+        - link "Contact" [ref=e14] [cursor=pointer]:
+          - /url: /contact
+    - generic [ref=e15]:
+      - generic "Available for new work" [ref=e16]: Available for work
+      - link "Login" [ref=e19] [cursor=pointer]:
+        - /url: /login
+      - button "Toggle theme" [ref=e20]:
+        - img [ref=e21]
+  - main [ref=e24]:
+    - region "I build fast, reliable web apps businesses run on." [ref=e25]:
+      - paragraph [ref=e26]: // Full-stack developer · Dubai
+      - heading "I build fast, reliable web apps businesses run on." [level=1] [ref=e27]
+      - paragraph [ref=e28]: Next.js & MERN-stack developer with a background in inventory and operations — so I build software that actually fits how a business works, not just how it looks.
+      - generic [ref=e29]:
+        - link "Start a project" [ref=e30] [cursor=pointer]:
+          - /url: /contact
+          - text: Start a project
+          - generic [ref=e31]: →
+        - link "See my work" [ref=e32] [cursor=pointer]:
+          - /url: /projects
+    - region "What I bring" [ref=e33]:
+      - heading "What I bring" [level=2] [ref=e34]
+      - list [ref=e35]:
+        - listitem [ref=e36]:
+          - generic [ref=e37]: Building
+          - generic [ref=e38]: 5+
+          - generic [ref=e39]: years shipping production software
+        - listitem [ref=e40]:
+          - generic [ref=e41]: Shipped
+          - generic [ref=e42]: "5"
+          - generic [ref=e43]: live products across UAE and remote clients
+        - listitem [ref=e44]:
+          - generic [ref=e45]: Stack
+          - generic [ref=e46]: MERN
+          - generic [ref=e47]: Next.js · MongoDB · TypeScript end-to-end
+        - listitem [ref=e48]:
+          - generic [ref=e49]: Style
+          - generic [ref=e50]: Solo
+          - generic [ref=e51]: design, build, deploy — no handoffs
+    - region "Tech stack" [ref=e52]:
+      - generic [ref=e53]:
+        - list [ref=e54]:
+          - listitem [ref=e55]: Next.js
+          - listitem [ref=e56]: React
+          - listitem [ref=e57]: Node.js
+          - listitem [ref=e58]: MongoDB
+          - listitem [ref=e59]: TypeScript
+          - listitem [ref=e60]: Tailwind
+          - listitem [ref=e61]: Mongoose
+          - listitem [ref=e62]: NextAuth
+          - listitem [ref=e63]: Vercel
+          - listitem [ref=e64]: REST APIs
+        - list [ref=e65]:
+          - listitem [ref=e66]: Next.js
+          - listitem [ref=e67]: React
+          - listitem [ref=e68]: Node.js
+          - listitem [ref=e69]: MongoDB
+          - listitem [ref=e70]: TypeScript
+          - listitem [ref=e71]: Tailwind
+          - listitem [ref=e72]: Mongoose
+          - listitem [ref=e73]: NextAuth
+          - listitem [ref=e74]: Vercel
+          - listitem [ref=e75]: REST APIs
+    - region "Projects I've built" [ref=e76]:
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - paragraph [ref=e79]: / selected work
+          - heading "Projects I've built" [level=2] [ref=e80]
+        - link "view all →" [ref=e81] [cursor=pointer]:
+          - /url: /projects
+      - list [ref=e82]:
+        - listitem [ref=e83]:
+          - link "01 SaaS Dirham VAT and expense tracker for UAE freelancers — logs income, calculates VAT, and exports clean reports at filing time. Next.js MongoDB TypeScript" [ref=e84] [cursor=pointer]:
+            - /url: /projects/dirham
+            - generic [ref=e85]:
+              - generic [ref=e86]: "01"
+              - generic [ref=e87]: SaaS
+            - generic [ref=e88]:
+              - heading "Dirham" [level=3] [ref=e89]:
+                - text: Dirham
+                - generic [ref=e90]: →
+              - paragraph [ref=e91]: VAT and expense tracker for UAE freelancers — logs income, calculates VAT, and exports clean reports at filing time.
+            - generic [ref=e92]:
+              - generic [ref=e93]: Next.js
+              - generic [ref=e94]: MongoDB
+              - generic [ref=e95]: TypeScript
+        - listitem [ref=e96]:
+          - link "02 Marketplace Groceri Grocery ordering with a customer storefront and an admin dashboard for products, stock and orders. Next.js MongoDB Tailwind" [ref=e97] [cursor=pointer]:
+            - /url: /projects/groceri
+            - generic [ref=e98]:
+              - generic [ref=e99]: "02"
+              - generic [ref=e100]: Marketplace
+            - generic [ref=e101]:
+              - heading "Groceri" [level=3] [ref=e102]:
+                - text: Groceri
+                - generic [ref=e103]: →
+              - paragraph [ref=e104]: Grocery ordering with a customer storefront and an admin dashboard for products, stock and orders.
+            - generic [ref=e105]:
+              - generic [ref=e106]: Next.js
+              - generic [ref=e107]: MongoDB
+              - generic [ref=e108]: Tailwind
+        - listitem [ref=e109]:
+          - link "03 E-commerce E-Markeet Digital products store — checkout, instant delivery, and a clean catalog for downloadable goods. Next.js MongoDB Stripe" [ref=e110] [cursor=pointer]:
+            - /url: /projects/e-markeet
+            - generic [ref=e111]:
+              - generic [ref=e112]: "03"
+              - generic [ref=e113]: E-commerce
+            - generic [ref=e114]:
+              - heading "E-Markeet" [level=3] [ref=e115]:
+                - text: E-Markeet
+                - generic [ref=e116]: →
+              - paragraph [ref=e117]: Digital products store — checkout, instant delivery, and a clean catalog for downloadable goods.
+            - generic [ref=e118]:
+              - generic [ref=e119]: Next.js
+              - generic [ref=e120]: MongoDB
+              - generic [ref=e121]: Stripe
+        - listitem [ref=e122]:
+          - link "04 Internal tool Restaurant POS Order-taking, kitchen flow and live stock control in one dashboard — built from real hospitality operations. React Node.js MongoDB" [ref=e123] [cursor=pointer]:
+            - /url: /projects/restaurant-pos
+            - generic [ref=e124]:
+              - generic [ref=e125]: "04"
+              - generic [ref=e126]: Internal tool
+            - generic [ref=e127]:
+              - heading "Restaurant POS" [level=3] [ref=e128]:
+                - text: Restaurant POS
+                - generic [ref=e129]: →
+              - paragraph [ref=e130]: Order-taking, kitchen flow and live stock control in one dashboard — built from real hospitality operations.
+            - generic [ref=e131]:
+              - generic [ref=e132]: React
+              - generic [ref=e133]: Node.js
+              - generic [ref=e134]: MongoDB
+    - region "How I can help" [ref=e135]:
+      - generic [ref=e136]:
+        - paragraph [ref=e137]: / services
+        - heading "How I can help" [level=2] [ref=e138]
+      - list [ref=e139]:
+        - listitem [ref=e140]:
+          - generic [ref=e141]: "01"
+          - heading "Web apps & dashboards" [level=3] [ref=e142]
+          - paragraph [ref=e143]: Full-stack builds with Next.js and MongoDB — from idea to deployed, with admin panels and auth done right.
+        - listitem [ref=e144]:
+          - generic [ref=e145]: "02"
+          - heading "Business & inventory tools" [level=3] [ref=e146]
+          - paragraph [ref=e147]: POS, stock, purchasing and reporting systems. I know operations, so the workflow actually makes sense.
+        - listitem [ref=e148]:
+          - generic [ref=e149]: "03"
+          - heading "Landing pages & storefronts" [level=3] [ref=e150]
+          - paragraph [ref=e151]: Fast, responsive, conversion-focused sites — restaurants, products, services — with payments built in.
+        - listitem [ref=e152]:
+          - generic [ref=e153]: "04"
+          - heading "Integrations & APIs" [level=3] [ref=e154]
+          - paragraph [ref=e155]: Stripe, NextAuth, file uploads, third-party APIs wired into your existing stack with tests and clear docs.
+    - region "What it adds up to" [ref=e156]:
+      - generic [ref=e157]:
+        - paragraph [ref=e158]: / by the numbers
+        - heading "What it adds up to" [level=2] [ref=e159]
+      - list [ref=e160]:
+        - listitem [ref=e161]:
+          - paragraph [ref=e162]: 0+
+          - paragraph [ref=e163]: Years building software
+        - listitem [ref=e164]:
+          - paragraph [ref=e165]: "0"
+          - paragraph [ref=e166]: Apps in production
+        - listitem [ref=e167]:
+          - paragraph [ref=e168]: "0"
+          - paragraph [ref=e169]: Core tools in active use
+        - listitem [ref=e170]:
+          - paragraph [ref=e171]: 0h
+          - paragraph [ref=e172]: Reply window for new leads
+    - region "What people I've worked with say" [ref=e173]:
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - paragraph [ref=e176]: / endorsements
+          - heading "What people I've worked with say" [level=2] [ref=e177]
+        - link "endorse a skill →" [ref=e178] [cursor=pointer]:
+          - /url: /register
+      - list [ref=e179]:
+        - listitem [ref=e180]:
+          - article [ref=e181]:
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: Next.js
+              - blockquote [ref=e184]: “Shipped our admin dashboard in two weeks — App Router, server components, the whole thing. Clean code, sensible commits, and it just worked on launch day.”
+            - generic [ref=e185]:
+              - generic [ref=e186]: RA
+              - generic [ref=e187]:
+                - paragraph [ref=e188]: Rashed Al-Mansoori
+                - paragraph [ref=e189]: Founder, Mansoori Trading
+        - listitem [ref=e190]:
+          - article [ref=e191]:
+            - generic [ref=e192]:
+              - paragraph [ref=e193]: MongoDB
+              - blockquote [ref=e194]: “Modeled our inventory and purchasing system without over-engineering. Indexes were thought through; nothing slowed down as we crossed 50k SKUs.”
+            - generic [ref=e195]:
+              - generic [ref=e196]: PN
+              - generic [ref=e197]:
+                - paragraph [ref=e198]: Priya Nair
+                - paragraph [ref=e199]: Ops Manager, Coastal Foods
+        - listitem [ref=e200]:
+          - article [ref=e201]:
+            - generic [ref=e202]:
+              - paragraph [ref=e203]: TypeScript
+              - blockquote [ref=e204]: “Took our untyped Express codebase and migrated it to strict TS over a sprint. Caught three latent bugs along the way and left the team comfortable maintaining it.”
+            - generic [ref=e205]:
+              - generic [ref=e206]: DO
+              - generic [ref=e207]:
+                - paragraph [ref=e208]: Daniel Okafor
+                - paragraph [ref=e209]: Tech Lead, Brightline
+        - listitem [ref=e210]:
+          - article [ref=e211]:
+            - generic [ref=e212]:
+              - paragraph [ref=e213]: React
+              - blockquote [ref=e214]: “Communicates trade-offs clearly — when to use a server component, when client. Reviews are honest and the patterns he picks scale with the product.”
+            - generic [ref=e215]:
+              - generic [ref=e216]: SH
+              - generic [ref=e217]:
+                - paragraph [ref=e218]: Sara Haddad
+                - paragraph [ref=e219]: Product Designer, Linear Studio
+        - listitem [ref=e220]:
+          - article [ref=e221]:
+            - generic [ref=e222]:
+              - paragraph [ref=e223]: Node.js
+              - blockquote [ref=e224]: “Built an order-processing pipeline that handles our peak Friday traffic without retries piling up. Logging and error handling were thought through from day one.”
+            - generic [ref=e225]:
+              - generic [ref=e226]: MI
+              - generic [ref=e227]:
+                - paragraph [ref=e228]: Mohammed Iqbal
+                - paragraph [ref=e229]: CTO, Groceri
+        - listitem [ref=e230]:
+          - article [ref=e231]:
+            - generic [ref=e232]:
+              - paragraph [ref=e233]: NextAuth
+              - blockquote [ref=e234]: “Wired up credentials + Google OAuth with the right session shape on both server and edge. No flaky redirects, no leaked tokens — exactly what you want from auth.”
+            - generic [ref=e235]:
+              - generic [ref=e236]: LP
+              - generic [ref=e237]:
+                - paragraph [ref=e238]: Lina Petrova
+                - paragraph [ref=e239]: Senior Engineer, Voltspark
+        - listitem [ref=e240]:
+          - article [ref=e241]:
+            - generic [ref=e242]:
+              - paragraph [ref=e243]: Tailwind CSS
+              - blockquote [ref=e244]: “Took our messy stylesheet and gave us a tidy design-token system in Tailwind v4. The site finally looks consistent in light and dark mode.”
+            - generic [ref=e245]:
+              - generic [ref=e246]: TR
+              - generic [ref=e247]:
+                - paragraph [ref=e248]: Tomás Reyes
+                - paragraph [ref=e249]: Frontend Lead, Mileta
+        - listitem [ref=e250]:
+          - article [ref=e251]:
+            - generic [ref=e252]:
+              - paragraph [ref=e253]: REST APIs
+              - blockquote [ref=e254]: “Documented every endpoint with a Zod schema and matching tests. Onboarding the next developer took a day instead of a week.”
+            - generic [ref=e255]:
+              - generic [ref=e256]: AM
+              - generic [ref=e257]:
+                - paragraph [ref=e258]: Aisha Mahmoud
+                - paragraph [ref=e259]: Engineering Manager, Saheel Labs
+    - region "Notes from what I'm building" [ref=e260]:
+      - generic [ref=e261]:
+        - generic [ref=e262]:
+          - paragraph [ref=e263]: / build journal
+          - heading "Notes from what I'm building" [level=2] [ref=e264]
+        - link "read all posts →" [ref=e265] [cursor=pointer]:
+          - /url: /blog
+      - list [ref=e266]:
+        - listitem [ref=e267]:
+          - link "Stack notes 6 min read Shipping a portfolio in Next.js 16 — the parts that bit me Server components are easy until they aren't. A short tour of the App Router rough edges I hit rebuilding this site from scratch. 22 May 2026" [ref=e268] [cursor=pointer]:
+            - /url: /blog/shipping-portfolio-in-next-16
+            - generic [ref=e269]:
+              - generic [ref=e270]:
+                - generic [ref=e271]: Stack notes
+                - generic [ref=e272]: ·
+                - generic [ref=e273]: 6 min read
+              - heading "Shipping a portfolio in Next.js 16 — the parts that bit me" [level=3] [ref=e274]
+              - paragraph [ref=e275]: Server components are easy until they aren't. A short tour of the App Router rough edges I hit rebuilding this site from scratch.
+            - generic [ref=e276]:
+              - time [ref=e277]: 22 May 2026
+              - generic [ref=e278]: →
+        - listitem [ref=e279]:
+          - link "Career 5 min read From hospitality ops to full-stack dev — the path so far I spent five years counting stock and reconciling invoices before I wrote my first useState. Why that background still shapes the code I ship today. 14 Apr 2026" [ref=e280] [cursor=pointer]:
+            - /url: /blog/from-hospitality-ops-to-fullstack
+            - generic [ref=e281]:
+              - generic [ref=e282]:
+                - generic [ref=e283]: Career
+                - generic [ref=e284]: ·
+                - generic [ref=e285]: 5 min read
+              - heading "From hospitality ops to full-stack dev — the path so far" [level=3] [ref=e286]
+              - paragraph [ref=e287]: I spent five years counting stock and reconciling invoices before I wrote my first useState. Why that background still shapes the code I ship today.
+            - generic [ref=e288]:
+              - time [ref=e289]: 14 Apr 2026
+              - generic [ref=e290]: →
+        - listitem [ref=e291]:
+          - link "Backend 7 min read MongoDB indexes I wish I'd added on day one Three index decisions that turned out to be load-bearing across every project I've shipped — and one I regret leaving for later. 2 Mar 2026" [ref=e292] [cursor=pointer]:
+            - /url: /blog/mongodb-indexes-i-wish-i-had
+            - generic [ref=e293]:
+              - generic [ref=e294]:
+                - generic [ref=e295]: Backend
+                - generic [ref=e296]: ·
+                - generic [ref=e297]: 7 min read
+              - heading "MongoDB indexes I wish I'd added on day one" [level=3] [ref=e298]
+              - paragraph [ref=e299]: Three index decisions that turned out to be load-bearing across every project I've shipped — and one I regret leaving for later.
+            - generic [ref=e300]:
+              - time [ref=e301]: 2 Mar 2026
+              - generic [ref=e302]: →
+    - region "Questions I hear a lot" [ref=e303]:
+      - generic [ref=e304]:
+        - paragraph [ref=e305]: / faq
+        - heading "Questions I hear a lot" [level=2] [ref=e306]
+      - generic [ref=e307]:
+        - group [ref=e308]:
+          - generic "What's a typical project timeline?" [ref=e309] [cursor=pointer]:
+            - generic [ref=e310]: What's a typical project timeline?
+            - img [ref=e311]
+        - group [ref=e313]:
+          - generic "Which stack do you work in?" [ref=e314] [cursor=pointer]:
+            - generic [ref=e315]: Which stack do you work in?
+            - img [ref=e316]
+        - group [ref=e318]:
+          - generic "Do you take on long-term retainers?" [ref=e319] [cursor=pointer]:
+            - generic [ref=e320]: Do you take on long-term retainers?
+            - img [ref=e321]
+        - group [ref=e323]:
+          - generic "Where are you based, and which time zones do you cover?" [ref=e324] [cursor=pointer]:
+            - generic [ref=e325]: Where are you based, and which time zones do you cover?
+            - img [ref=e326]
+        - group [ref=e328]:
+          - generic "How do you price work?" [ref=e329] [cursor=pointer]:
+            - generic [ref=e330]: How do you price work?
+            - img [ref=e331]
+        - group [ref=e333]:
+          - generic "Can you take over an existing codebase?" [ref=e334] [cursor=pointer]:
+            - generic [ref=e335]: Can you take over an existing codebase?
+            - img [ref=e336]
+    - region "Short notes when I ship something new" [ref=e338]:
+      - generic [ref=e339]:
+        - paragraph [ref=e340]: / build journal
+        - heading "Short notes when I ship something new" [level=2] [ref=e341]
+        - paragraph [ref=e342]: One or two emails a month. New posts, small lessons from real projects, and the occasional behind-the-scenes from what I'm building. Unsubscribe any time.
+        - generic [ref=e343]:
+          - generic [ref=e344]:
+            - generic [ref=e345]: Email address
+            - textbox "Email address" [ref=e346]:
+              - /placeholder: you@example.com
+            - button "Subscribe" [ref=e347]
+          - status [ref=e348]
+    - region "Have a project in mind?" [ref=e349]:
+      - generic [ref=e350]:
+        - generic [ref=e351]:
+          - paragraph [ref=e352]: / let's talk
+          - heading "Have a project in mind?" [level=2] [ref=e353]
+          - paragraph [ref=e354]: Tell me what you're trying to build. I'll reply with honest scope, timeline, and a clear next step — usually within 24 hours.
+          - link "hello@syed.dev →" [ref=e355] [cursor=pointer]:
+            - /url: mailto:hello@syed.dev
+        - generic [ref=e356]:
+          - generic [ref=e357]:
+            - generic [ref=e359]: Your name
+            - textbox "Your name" [ref=e360]
+          - generic [ref=e361]:
+            - generic [ref=e363]: Email
+            - textbox "Email" [ref=e364]
+          - generic [ref=e365]:
+            - generic [ref=e366]:
+              - generic [ref=e367]: Project type
+              - generic [ref=e368]: optional
+            - combobox "Project type optional" [ref=e369]:
+              - option "Pick the closest match…" [selected]
+              - option "Web app or dashboard"
+              - option "Landing page or storefront"
+              - option "Inventory or POS tool"
+              - option "Integration or API work"
+              - option "Something else"
+          - generic [ref=e370]:
+            - generic [ref=e372]: Tell me about it
+            - textbox "Tell me about it" [ref=e373]
+          - button "Send message →" [ref=e374]
+          - status [ref=e375]
+  - contentinfo [ref=e376]:
+    - generic [ref=e377]:
+      - generic [ref=e378]:
+        - link "syed.dev" [ref=e379] [cursor=pointer]:
+          - /url: /
+        - paragraph [ref=e380]: Full-stack developer in Dubai. Building fast, reliable web apps with Next.js and MongoDB — and a public build journal alongside every project.
+      - navigation "Site" [ref=e381]:
+        - paragraph [ref=e382]: / site
+        - link "Home" [ref=e383] [cursor=pointer]:
+          - /url: /
+        - link "Projects" [ref=e384] [cursor=pointer]:
+          - /url: /projects
+        - link "Blog" [ref=e385] [cursor=pointer]:
+          - /url: /blog
+        - link "About" [ref=e386] [cursor=pointer]:
+          - /url: /about
+      - navigation "Connect" [ref=e387]:
+        - paragraph [ref=e388]: / connect
+        - link "GitHub" [ref=e389] [cursor=pointer]:
+          - /url: https://github.com/
+        - link "LinkedIn" [ref=e390] [cursor=pointer]:
+          - /url: https://www.linkedin.com/
+        - link "Upwork" [ref=e391] [cursor=pointer]:
+          - /url: https://www.upwork.com/
+        - link "Email" [ref=e392] [cursor=pointer]:
+          - /url: mailto:hello@syed.dev
+    - generic [ref=e393]:
+      - paragraph [ref=e394]: © 2026 Syed Ahammad · Built with Next.js
+      - paragraph [ref=e395]: Made in Dubai
+  - button "Open Next.js Dev Tools" [ref=e401] [cursor=pointer]:
+    - img [ref=e402]

@@ -81,6 +81,7 @@ Each step is sized to finish in one sitting, leaves the app working, and ends wi
 - [ ] 4.7 Share on LinkedIn / add to Fiverr & Upwork profiles
 
 ## Phase 5 — Growth (later)
+- [ ] Chatbot (AI assistent)
 - [ ] Email notification on new lead (Resend)
 - [ ] Manager / 3rd role
 - [ ] Threaded comments on blog
