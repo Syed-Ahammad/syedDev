@@ -7,6 +7,8 @@ import { Services } from "@/components/public/Services";
 import { Stats } from "@/components/public/Stats";
 import { EndorsementsWall } from "@/components/public/EndorsementsWall";
 import { BlogPreview } from "@/components/public/BlogPreview";
+import { Faq } from "@/components/public/Faq";
+import { Newsletter } from "@/components/public/Newsletter";
 
 export default function Home() {
   return (
@@ -21,6 +23,8 @@ export default function Home() {
         <Stats />
         <EndorsementsWall />
         <BlogPreview />
+        <Faq />
+        <Newsletter />
       </main>
     </>
   );
