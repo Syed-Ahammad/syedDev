@@ -3,6 +3,7 @@ import { Hero } from "@/components/public/Hero";
 import { Highlights } from "@/components/public/Highlights";
 import { StackStrip } from "@/components/public/StackStrip";
 import { FeaturedProjects } from "@/components/public/FeaturedProjects";
+import { Services } from "@/components/public/Services";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
         <Highlights />
         <StackStrip />
         <FeaturedProjects />
+        <Services />
       </main>
     </>
   );

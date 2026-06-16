@@ -21,6 +21,9 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
+    env: {
+      NODE_OPTIONS: "--max-old-space-size=4096",
+    },
   },
 });

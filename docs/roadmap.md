@@ -1,4 +1,3 @@
-
 # Roadmap — small, manageable steps
 
 Each step is sized to finish in one sitting, leaves the app working, and ends with a commit. Never start a step before the previous one runs.
