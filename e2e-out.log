@@ -1,0 +1,183 @@
+
+> syed-portfolio@0.1.0 test:e2e
+> playwright test
+
+[2m[WebServer] [22m[36m[browser][39m A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[2m[WebServer] [22m
+[2m[WebServer] [22m- A server/client branch `if (typeof window !== 'undefined')`.
+[2m[WebServer] [22m- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[2m[WebServer] [22m- Date formatting in a user's locale which doesn't match the server.
+[2m[WebServer] [22m- External changing data without sending a snapshot of it along with the HTML.
+[2m[WebServer] [22m- Invalid HTML tag nesting.
+[2m[WebServer] [22m
+[2m[WebServer] [22mIt can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[2m[WebServer] [22m
+[2m[WebServer] [22mhttps://react.dev/link/hydration-mismatch
+[2m[WebServer] [22m
+[2m[WebServer] [22m  ...
+[2m[WebServer] [22m    <InnerScrollAndFocusHandlerOld focusAndScrollRef={{scrollRef:null, ...}} cacheNode={{rsc:{...}, ...}}>
+[2m[WebServer] [22m      <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+[2m[WebServer] [22m        <LoadingBoundary name="/" loading={null}>
+[2m[WebServer] [22m          <HTTPAccessFallbackBoundary notFound={{...}} forbidden={undefined} unauthorized={undefined}>
+[2m[WebServer] [22m            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={{...}} forbidden={undefined} unauthorized={undefined} ...>
+[2m[WebServer] [22m              <RedirectBoundary>
+[2m[WebServer] [22m                <RedirectErrorBoundary router={{...}}>
+[2m[WebServer] [22m                  <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[2m[WebServer] [22m                    <SegmentViewNode type="page" pagePath="page.tsx">
+[2m[WebServer] [22m                      <SegmentTrieNode>
+[2m[WebServer] [22m                      <Home>
+[2m[WebServer] [22m                        <Navbar>
+[2m[WebServer] [22m                          <nav aria-label="Primary" className="sticky top...">
+[2m[WebServer] [22m                            <LinkComponent>
+[2m[WebServer] [22m                            <ul>
+[2m[WebServer] [22m                            <div className="flex items...">
+[2m[WebServer] [22m                              <span>
+[2m[WebServer] [22m                              <LinkComponent>
+[2m[WebServer] [22m                              <ThemeToggle>
+[2m[WebServer] [22m                                <button
+[2m[WebServer] [22m                                  type="button"
+[2m[WebServer] [22m                                  aria-label="Toggle theme"
+[2m[WebServer] [22m                                  onClick={function onClick}
+[2m[WebServer] [22m                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border borde..."
+[2m[WebServer] [22m-                                 fdprocessedid="bzgd5v"
+[2m[WebServer] [22m                                >
+[2m[WebServer] [22m                        <main className="flex flex-...">
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <Stats>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <section>
+[2m[WebServer] [22m                          <Newsletter>
+[2m[WebServer] [22m                            <section aria-labelledby="newsletter..." className="border-t b...">
+[2m[WebServer] [22m                              <div className="mx-auto fl...">
+[2m[WebServer] [22m                                <p>
+[2m[WebServer] [22m                                <h2>
+[2m[WebServer] [22m                                <p>
+[2m[WebServer] [22m                                <form onSubmit={function onSubmit} noValidate={true} className="mt-2 flex ..." ...>
+[2m[WebServer] [22m                                  <label>
+[2m[WebServer] [22m                                  <input
+[2m[WebServer] [22m                                    id="_R_1ainelb_"
+[2m[WebServer] [22m                                    name="email"
+[2m[WebServer] [22m                                    type="email"
+[2m[WebServer] [22m                                    inputMode="email"
+[2m[WebServer] [22m                                    autoComplete="email"
+[2m[WebServer] [22m                                    required={true}
+[2m[WebServer] [22m                                    placeholder="you@example.com"
+[2m[WebServer] [22m                                    value=""
+[2m[WebServer] [22m                                    onChange={function onChange}
+[2m[WebServer] [22m                                    disabled={false}
+[2m[WebServer] [22m                                    aria-invalid={false}
+[2m[WebServer] [22m                                    className="h-12 min-w-0 flex-1 rounded-full border border-border bg-background px-..."
+[2m[WebServer] [22m-                                   fdprocessedid="8doatn"
+[2m[WebServer] [22m                                  >
+[2m[WebServer] [22m                                  <button
+[2m[WebServer] [22m                                    type="submit"
+[2m[WebServer] [22m                                    disabled={false}
+[2m[WebServer] [22m                                    className="inline-flex h-12 items-center justify-center rounded-full bg-coral px-6..."
+[2m[WebServer] [22m-                                   fdprocessedid="p9b1j"
+[2m[WebServer] [22m                                  >
+[2m[WebServer] [22m+                                   Subscribe
+[2m[WebServer] [22m                                ...
+[2m[WebServer] [22m                          <ContactForm>
+[2m[WebServer] [22m                            <section id="contact" aria-labelledby="contact-he..." className="border-t b...">
+[2m[WebServer] [22m                              <div className="mx-auto gr...">
+[2m[WebServer] [22m                                <div>
+[2m[WebServer] [22m                                <form onSubmit={function onSubmit} noValidate={true} aria-describedby={undefined} ...>
+[2m[WebServer] [22m                                  <Field id="_R_1einelb_" label="Your name" error={undefined} input={<input>}>
+[2m[WebServer] [22m                                    <div className="flex flex-...">
+[2m[WebServer] [22m                                      <label>
+[2m[WebServer] [22m                                      <input
+[2m[WebServer] [22m                                        id="_R_1einelb_"
+[2m[WebServer] [22m                                        name="name"
+[2m[WebServer] [22m                                        type="text"
+[2m[WebServer] [22m                                        autoComplete="name"
+[2m[WebServer] [22m                                        required={true}
+[2m[WebServer] [22m                                        value=""
+[2m[WebServer] [22m                                        onChange={function onChange}
+[2m[WebServer] [22m                                        disabled={false}
+[2m[WebServer] [22m                                        aria-invalid={false}
+[2m[WebServer] [22m                                        aria-describedby={undefined}
+[2m[WebServer] [22m                                        className="w-full rounded-xl border border-border bg-background px-4 py-3 text..."
+[2m[WebServer] [22m-                                       fdprocessedid="1xdt2v"
+[2m[WebServer] [22m                                      >
+[2m[WebServer] [22m                                  <Field id="_R_1einelbH1_" label="Email" error={undefined} input={<input>}>
+[2m[WebServer] [22m                                    <div className="flex flex-...">
+[2m[WebServer] [22m                                      <label>
+[2m[WebServer] [22m                                      <input
+[2m[WebServer] [22m                                        id="_R_1einelbH1_"
+[2m[WebServer] [22m                                        name="email"
+[2m[WebServer] [22m                                        type="email"
+[2m[WebServer] [22m                                        inputMode="email"
+[2m[WebServer] [22m                                        autoComplete="email"
+[2m[WebServer] [22m                                        required={true}
+[2m[WebServer] [22m                                        value=""
+[2m[WebServer] [22m                                        onChange={function onChange}
+[2m[WebServer] [22m                                        disabled={false}
+[2m[WebServer] [22m                                        aria-invalid={false}
+[2m[WebServer] [22m                                        aria-describedby={undefined}
+[2m[WebServer] [22m                                        className="w-full rounded-xl border border-border bg-background px-4 py-3 text..."
+[2m[WebServer] [22m-                                       fdprocessedid="eq9x4g"
+[2m[WebServer] [22m                                      >
+[2m[WebServer] [22m                                  <Field id="_R_1einelbH2_" label="Project type" optional={true} error={undefined} ...>
+[2m[WebServer] [22m                                    <div className="flex flex-...">
+[2m[WebServer] [22m                                      <label>
+[2m[WebServer] [22m                                      <select
+[2m[WebServer] [22m                                        id="_R_1einelbH2_"
+[2m[WebServer] [22m                                        name="projectType"
+[2m[WebServer] [22m                                        value=""
+[2m[WebServer] [22m                                        onChange={function onChange}
+[2m[WebServer] [22m                                        disabled={false}
+[2m[WebServer] [22m                                        className="w-full rounded-xl border border-border bg-background px-4 py-3 text..."
+[2m[WebServer] [22m-                                       fdprocessedid="luur8j"
+[2m[WebServer] [22m                                      >
+[2m[WebServer] [22m                                  <Field>
+[2m[WebServer] [22m                                  <button
+[2m[WebServer] [22m                                    type="submit"
+[2m[WebServer] [22m                                    disabled={false}
+[2m[WebServer] [22m                                    className="inline-flex h-12 items-center justify-center rounded-full bg-coral px-6..."
+[2m[WebServer] [22m-                                   fdprocessedid="tedck"
+[2m[WebServer] [22m                                  >
+[2m[WebServer] [22m+                                   Send message →
+[2m[WebServer] [22m                                  ...
+[2m[WebServer] [22m                        ...
+[2m[WebServer] [22m                    ...
+[2m[WebServer] [22m                  ...
+[2m[WebServer] [22m      ...
+[2m[WebServer] [22m 
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › e2e\sample.spec.ts:3:5 › home page renders hero and navbar (8.0s)
+
+
+  1) [chromium] › e2e\sample.spec.ts:3:5 › home page renders hero and navbar ───────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('form').filter({ hasText: /subscribe/i }).getByRole('status')
+    Expected pattern: [32m/valid email/i[39m
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('form').filter({ hasText: /subscribe/i }).getByRole('status')[22m
+
+
+      47 |   await emailField.fill("nope");
+      48 |   await subscribe.click();
+    > 49 |   await expect(newsletter.getByRole("status")).toContainText(/valid email/i);
+         |                                                ^
+      50 |   await emailField.fill("hello@example.com");
+      51 |   await subscribe.click();
+      52 |   await expect(newsletter.getByRole("status")).toContainText(/worth reading/i);
+        at D:\syedDev\e2e\sample.spec.ts:49:48
+
+    Error Context: test-results\sample-home-page-renders-hero-and-navbar-chromium\error-context.md
+
+  1 failed
+    [chromium] › e2e\sample.spec.ts:3:5 › home page renders hero and navbar ────────────────────────

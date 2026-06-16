@@ -9,6 +9,8 @@ import { EndorsementsWall } from "@/components/public/EndorsementsWall";
 import { BlogPreview } from "@/components/public/BlogPreview";
 import { Faq } from "@/components/public/Faq";
 import { Newsletter } from "@/components/public/Newsletter";
+import { ContactForm } from "@/components/public/ContactForm";
+import { Footer } from "@/components/public/Footer";
 
 export default function Home() {
   return (
@@ -25,7 +27,9 @@ export default function Home() {
         <BlogPreview />
         <Faq />
         <Newsletter />
+        <ContactForm />
       </main>
+      <Footer />
     </>
   );
 }

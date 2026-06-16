@@ -53,51 +53,53 @@ export function Newsletter() {
         <form
           onSubmit={onSubmit}
           noValidate
-          className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-center"
+          className="mt-2 flex flex-col gap-3"
           aria-describedby={message ? messageId : undefined}
         >
-          <label htmlFor={emailId} className="sr-only">
-            Email address
-          </label>
-          <input
-            id={emailId}
-            name="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            required
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (status !== "idle") {
-                setStatus("idle");
-                setMessage("");
-              }
-            }}
-            disabled={disabled}
-            aria-invalid={status === "error"}
-            className="h-12 min-w-0 flex-1 rounded-full border border-border bg-background px-5 text-sm text-foreground placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral disabled:opacity-60 sm:max-w-sm"
-          />
-          <button
-            type="submit"
-            disabled={disabled}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-coral px-6 font-mono text-xs uppercase tracking-[0.14em] text-background transition-colors hover:bg-coral/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral disabled:opacity-60"
-          >
-            {disabled ? "Sending…" : "Subscribe"}
-          </button>
-        </form>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-center">
+            <label htmlFor={emailId} className="sr-only">
+              Email address
+            </label>
+            <input
+              id={emailId}
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (status !== "idle") {
+                  setStatus("idle");
+                  setMessage("");
+                }
+              }}
+              disabled={disabled}
+              aria-invalid={status === "error"}
+              className="h-12 min-w-0 flex-1 rounded-full border border-border bg-background px-5 text-sm text-foreground placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral disabled:opacity-60 sm:max-w-sm"
+            />
+            <button
+              type="submit"
+              disabled={disabled}
+              className="inline-flex h-12 items-center justify-center rounded-full bg-coral px-6 font-mono text-xs uppercase tracking-[0.14em] text-background transition-colors hover:bg-coral/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral disabled:opacity-60"
+            >
+              {disabled ? "Sending…" : "Subscribe"}
+            </button>
+          </div>
 
-        <p
-          id={messageId}
-          role="status"
-          aria-live="polite"
-          className={`min-h-[1.25rem] text-sm ${
-            status === "error" ? "text-coral" : "text-teal"
-          }`}
-        >
-          {message}
-        </p>
+          <p
+            id={messageId}
+            role="status"
+            aria-live="polite"
+            className={`min-h-[1.25rem] text-sm ${
+              status === "error" ? "text-coral" : "text-teal"
+            }`}
+          >
+            {message}
+          </p>
+        </form>
       </div>
     </section>
   );
