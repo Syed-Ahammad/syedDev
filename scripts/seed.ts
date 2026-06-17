@@ -12,9 +12,11 @@ import { User } from "../models/User";
 import { Project } from "../models/Project";
 import { BlogPost } from "../models/BlogPost";
 import { Profile } from "../models/Profile";
+import { Endorsement } from "../models/Endorsement";
 import { MOCK_PROJECTS } from "../lib/mock-projects";
 import { MOCK_PROJECT_DETAILS } from "../lib/mock-project-details";
 import { MOCK_BLOG_POSTS } from "../lib/mock-blog";
+import { MOCK_ENDORSEMENTS } from "../lib/mock-endorsements";
 
 function loadEnv() {
   for (const file of [".env.local", ".env"]) {
@@ -126,6 +128,66 @@ async function seedBlog() {
   return MOCK_BLOG_POSTS.length;
 }
 
+// Display-only endorser accounts (credentials provider, no passwordHash → they
+// can't log in). The mock's "role" line becomes each endorser's public bio.
+function emailFromName(name: string) {
+  const handle = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "");
+  return `${handle}@example.com`;
+}
+
+async function seedEndorsements() {
+  const projects = await Project.find().select("_id").sort({ order: 1 }).lean();
+
+  for (let i = 0; i < MOCK_ENDORSEMENTS.length; i++) {
+    const e = MOCK_ENDORSEMENTS[i];
+    const endorser = await User.findOneAndUpdate(
+      { email: emailFromName(e.endorserName) },
+      {
+        $set: {
+          name: e.endorserName,
+          role: "user",
+          provider: "credentials",
+          bio: e.endorserRole,
+          suspended: false,
+        },
+      },
+      { upsert: true, new: true },
+    );
+    if (!endorser) continue;
+
+    // Round-robin across projects so detail pages get endorsements too.
+    const projectId = projects.length
+      ? projects[i % projects.length]._id
+      : undefined;
+
+    await Endorsement.findOneAndUpdate(
+      { userId: endorser._id, skill: e.skill },
+      {
+        $set: {
+          text: e.text,
+          status: e.status,
+          ...(projectId ? { projectId } : {}),
+        },
+      },
+      { upsert: true, new: true },
+    );
+  }
+
+  // Recompute the denormalized approved-count per project (idempotent).
+  for (const p of projects) {
+    const count = await Endorsement.countDocuments({
+      projectId: p._id,
+      status: "approved",
+    });
+    await Project.updateOne({ _id: p._id }, { $set: { endorsementCount: count } });
+  }
+
+  return MOCK_ENDORSEMENTS.length;
+}
+
 async function seedProfile() {
   await Profile.findByIdAndUpdate(
     "singleton",
@@ -190,12 +252,14 @@ async function main() {
   const projects = await seedProjects();
   const posts = await seedBlog();
   await seedProfile();
+  const endorsements = await seedEndorsements();
 
   console.log("Seed complete:");
-  console.log(`  users:    ${users.join(", ")}`);
-  console.log(`  projects: ${projects} upserted`);
-  console.log(`  blog:     ${posts} upserted`);
-  console.log("  profile:  singleton upserted");
+  console.log(`  users:        ${users.join(", ")}`);
+  console.log(`  projects:     ${projects} upserted`);
+  console.log(`  blog:         ${posts} upserted`);
+  console.log("  profile:      singleton upserted");
+  console.log(`  endorsements: ${endorsements} upserted (+ endorser accounts)`);
 
   await mongoose.disconnect();
 }

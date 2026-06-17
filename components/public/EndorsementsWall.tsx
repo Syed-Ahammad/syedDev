@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { EndorsementCard } from "./EndorsementCard";
-import { MOCK_ENDORSEMENTS } from "@/lib/mock-endorsements";
+import { fetchApprovedEndorsements } from "@/lib/endorsements";
+import type { Endorsement } from "@/types";
 
-export function EndorsementsWall() {
-  const endorsements = MOCK_ENDORSEMENTS.filter(
-    (e) => e.status === "approved",
-  ).slice(0, 8);
+export async function EndorsementsWall() {
+  let endorsements: Endorsement[] = [];
+  try {
+    endorsements = await fetchApprovedEndorsements({ limit: 8 });
+  } catch {
+    // No DB at build time → render an empty wall rather than fail the page.
+    endorsements = [];
+  }
 
   return (
     <section
@@ -32,13 +37,27 @@ export function EndorsementsWall() {
         </Link>
       </div>
 
-      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {endorsements.map((endorsement) => (
-          <li key={endorsement.id}>
-            <EndorsementCard endorsement={endorsement} />
-          </li>
-        ))}
-      </ul>
+      {endorsements.length === 0 ? (
+        <div className="rounded-2xl border border-border bg-surface p-10 text-center">
+          <p className="text-sm text-muted">
+            No endorsements yet.{" "}
+            <Link
+              href="/login"
+              className="text-coral transition-opacity hover:opacity-80"
+            >
+              Be the first to endorse a skill →
+            </Link>
+          </p>
+        </div>
+      ) : (
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {endorsements.map((endorsement) => (
+            <li key={endorsement.id}>
+              <EndorsementCard endorsement={endorsement} />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

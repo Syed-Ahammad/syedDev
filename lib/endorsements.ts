@@ -1,3 +1,4 @@
+import { isValidObjectId } from "mongoose";
 import { dbConnect } from "@/lib/db";
 import { Endorsement, type EndorsementStatus } from "@/models/Endorsement";
 import { Project } from "@/models/Project";
@@ -51,7 +52,7 @@ export async function fetchUserEndorsements(
 
 const ADMIN_ENDORSEMENTS_PAGE_SIZE = 10;
 
-export type AdminEndorsementItem = {
+export type EndorsementSummary = {
   id: string;
   skill: string;
   text: string;
@@ -79,7 +80,7 @@ type LeanAdminEndorsement = {
 
 // No job-title field exists on User, so the endorser's email fills the
 // secondary line — it's what an admin needs to identify who endorsed.
-const mapAdminEndorsement = (doc: LeanAdminEndorsement): AdminEndorsementItem => ({
+const mapEndorsement = (doc: LeanAdminEndorsement): EndorsementSummary => ({
   id: String(doc._id),
   skill: doc.skill,
   text: doc.text,
@@ -100,7 +101,7 @@ export function parseEndorsementListParams(sp: URLSearchParams): EndorsementList
 
 /** Paginated moderation queue, optionally filtered by status. */
 export async function fetchAdminEndorsements(params: EndorsementListParams): Promise<{
-  items: AdminEndorsementItem[];
+  items: EndorsementSummary[];
   total: number;
   page: number;
   totalPages: number;
@@ -119,17 +120,17 @@ export async function fetchAdminEndorsements(params: EndorsementListParams): Pro
     .populate<{ userId: PopulatedUser }>("userId", "name email")
     .lean();
 
-  return { items: docs.map(mapAdminEndorsement), total, page, totalPages };
+  return { items: docs.map(mapEndorsement), total, page, totalPages };
 }
 
 /** Every endorsement, newest first — feeds the queue UI's client-side tabs. */
-export async function fetchAllAdminEndorsements(): Promise<AdminEndorsementItem[]> {
+export async function fetchAllAdminEndorsements(): Promise<EndorsementSummary[]> {
   await dbConnect();
   const docs = await Endorsement.find()
     .sort({ createdAt: -1 })
     .populate<{ userId: PopulatedUser }>("userId", "name email")
     .lean();
-  return docs.map(mapAdminEndorsement);
+  return docs.map(mapEndorsement);
 }
 
 /**
@@ -161,4 +162,40 @@ export async function setEndorsementStatus(
   }
 
   return { id, status: updated.status };
+}
+
+// — Public read ———————————————————————————————————————————————————————————————
+
+type PublicUser = { name: string; bio?: string } | null;
+
+/**
+ * Approved endorsements for public surfaces (home wall + project detail).
+ * Pass `projectId` to scope to one project. Fetches only the endorser's name
+ * and (public) bio — never the email — so no PII reaches the public site.
+ */
+export async function fetchApprovedEndorsements(
+  options: { projectId?: string; limit?: number } = {},
+): Promise<EndorsementSummary[]> {
+  // A malformed projectId would throw a cast error — treat it as "no results".
+  if (options.projectId && !isValidObjectId(options.projectId)) return [];
+
+  await dbConnect();
+  const filter: Record<string, unknown> = { status: "approved" };
+  if (options.projectId) filter.projectId = options.projectId;
+
+  let query = Endorsement.find(filter)
+    .sort({ createdAt: -1 })
+    .populate<{ userId: PublicUser }>("userId", "name bio");
+  if (options.limit) query = query.limit(options.limit);
+  const docs = await query.lean();
+
+  return docs.map((doc) => ({
+    id: String(doc._id),
+    skill: doc.skill,
+    text: doc.text,
+    endorserName: doc.userId?.name ?? "A client",
+    endorserRole: doc.userId?.bio ?? "", // public bio; email is never fetched
+    status: doc.status,
+    submittedAt: doc.createdAt.toISOString(),
+  }));
 }

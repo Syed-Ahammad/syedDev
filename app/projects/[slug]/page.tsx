@@ -13,7 +13,7 @@ import {
   getRelatedProjects,
   getPublishedSlugs,
 } from "@/lib/projects";
-import { MOCK_ENDORSEMENTS } from "@/lib/mock-endorsements";
+import { fetchApprovedEndorsements } from "@/lib/endorsements";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -44,15 +44,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  // Endorsements stay on mock data until step 3.16 wires the public endpoint.
-  const matchTerms = new Set(
-    [project.type, ...project.stack].map((s) => s.toLowerCase()),
-  );
-  const endorsements = MOCK_ENDORSEMENTS.filter(
-    (e) => e.status === "approved" && matchTerms.has(e.skill.toLowerCase()),
-  ).slice(0, 3);
-
-  const related = await getRelatedProjects(project);
+  const [endorsements, related] = await Promise.all([
+    fetchApprovedEndorsements({ projectId: project.id, limit: 3 }),
+    getRelatedProjects(project),
+  ]);
 
   return (
     <>
