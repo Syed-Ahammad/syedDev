@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { leadSchema, loginSchema } from "@/lib/validations";
+import { leadSchema, loginSchema, registerSchema } from "@/lib/validations";
 
 const valid = {
   name: "Omar Al-Rashid",
@@ -63,5 +63,29 @@ describe("loginSchema", () => {
     expect(
       loginSchema.safeParse({ email: "a@b.com", password: "" }).success,
     ).toBe(false);
+  });
+});
+
+describe("registerSchema", () => {
+  const valid = { name: "Aisha", email: "aisha@example.com", password: "pass1234" };
+
+  it("accepts a valid registration", () => {
+    expect(registerSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("requires a password of at least 8 characters", () => {
+    expect(
+      registerSchema.safeParse({ ...valid, password: "pass123" }).success,
+    ).toBe(false);
+  });
+
+  it("requires at least one number in the password", () => {
+    expect(
+      registerSchema.safeParse({ ...valid, password: "password" }).success,
+    ).toBe(false);
+  });
+
+  it("rejects a name shorter than 2 characters", () => {
+    expect(registerSchema.safeParse({ ...valid, name: "A" }).success).toBe(false);
   });
 });

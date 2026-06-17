@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { signIn } from "next-auth/react";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -110,10 +111,7 @@ export function LoginForm() {
       <button
         type="button"
         disabled={submitting}
-        onClick={() => {
-          setStatus("error");
-          setBanner("Google sign-in lands when NextAuth is wired in phase 3.");
-        }}
+        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
         className="inline-flex h-11 items-center justify-center gap-3 rounded-full border border-border bg-background px-5 text-sm font-medium text-foreground transition-colors hover:border-coral disabled:opacity-60"
       >
         <GoogleGlyph />
