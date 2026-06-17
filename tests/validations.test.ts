@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { leadSchema } from "@/lib/validations";
+import { leadSchema, loginSchema } from "@/lib/validations";
 
 const valid = {
   name: "Omar Al-Rashid",
@@ -42,6 +42,26 @@ describe("leadSchema", () => {
     ).toBe(true);
     expect(
       leadSchema.safeParse({ ...valid, source: "spam" }).success,
+    ).toBe(false);
+  });
+});
+
+describe("loginSchema", () => {
+  it("accepts a valid email + password", () => {
+    expect(
+      loginSchema.safeParse({ email: "a@b.com", password: "secret" }).success,
+    ).toBe(true);
+  });
+
+  it("rejects an invalid email", () => {
+    expect(
+      loginSchema.safeParse({ email: "nope", password: "secret" }).success,
+    ).toBe(false);
+  });
+
+  it("rejects an empty password", () => {
+    expect(
+      loginSchema.safeParse({ email: "a@b.com", password: "" }).success,
     ).toBe(false);
   });
 });
