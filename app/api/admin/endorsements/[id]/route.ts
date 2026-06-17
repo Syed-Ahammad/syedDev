@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { errorResponse, HttpError } from "@/lib/api";
 import { endorsementModerationSchema } from "@/lib/validations";
 import { setEndorsementStatus } from "@/lib/endorsements";
+import { revalidateEndorsements } from "@/lib/revalidate";
 
 // PATCH /api/admin/endorsements/[id] — approve / reject / return to pending.
 // Atomically syncs the attached project's endorsementCount (admin only).
@@ -22,7 +23,7 @@ export async function PATCH(
     const result = await setEndorsementStatus(id, status);
     if (!result) throw new HttpError(404, "Endorsement not found.");
 
-    // NOTE: revalidatePath('/') + project page deferred to step 3.23.
+    revalidateEndorsements(result.projectSlug);
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
     return errorResponse(error);

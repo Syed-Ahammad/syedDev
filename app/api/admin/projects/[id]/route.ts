@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { errorResponse, HttpError } from "@/lib/api";
 import { dbConnect } from "@/lib/db";
 import { Project } from "@/models/Project";
+import { revalidateProject } from "@/lib/revalidate";
 import { projectUpdateSchema } from "@/lib/validations";
 
 // PATCH /api/admin/projects/[id] — update a project incl. status (admin only).
@@ -27,7 +28,7 @@ export async function PATCH(
     ).lean();
     if (!project) throw new HttpError(404, "Project not found.");
 
-    // NOTE: revalidatePath('/', '/projects', '/projects/[slug]') is wired in 3.23.
+    revalidateProject(project.slug);
     return NextResponse.json({ success: true, data: { id: String(project._id) } });
   } catch (error) {
     return errorResponse(error);
@@ -48,7 +49,7 @@ export async function DELETE(
     const deleted = await Project.findByIdAndDelete(id).lean();
     if (!deleted) throw new HttpError(404, "Project not found.");
 
-    // NOTE: revalidatePath('/', '/projects', '/projects/[slug]') is wired in 3.23.
+    revalidateProject(deleted.slug);
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error);

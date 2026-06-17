@@ -23,7 +23,7 @@ export async function PATCH(
     const user = await updateUser(id, patch);
     if (!user) throw new HttpError(404, "User not found.");
 
-    // NOTE: revalidatePath('/admin/users') deferred to step 3.23.
+    // No public revalidation: /admin/* pages are force-dynamic.
     return NextResponse.json({ success: true, data: user });
   } catch (error) {
     return errorResponse(error);
@@ -45,7 +45,7 @@ export async function DELETE(
     const ok = await deleteUserWithCascade(id);
     if (!ok) throw new HttpError(404, "User not found.");
 
-    // NOTE: revalidatePath('/admin/users') deferred to step 3.23.
+    // No public revalidation: /admin/* pages are force-dynamic.
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error);

@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { errorResponse, HttpError } from "@/lib/api";
 import { dbConnect } from "@/lib/db";
 import { BlogPost } from "@/models/BlogPost";
+import { revalidateBlog } from "@/lib/revalidate";
 import { blogUpdateSchema } from "@/lib/validations";
 
 // PATCH /api/admin/blog/[id] — update a post (admin only). First publish
@@ -36,7 +37,8 @@ export async function PATCH(
     ).lean();
     if (!updated) throw new HttpError(404, "Post not found.");
 
-    // NOTE: revalidatePath('/blog', '/blog/[slug]', '/') wired in step 3.23.
+    // Revalidate if the post is public now or just stopped being public.
+    if (existing.published || updated.published) revalidateBlog(updated.slug);
     return NextResponse.json({ success: true, data: { id: String(updated._id) } });
   } catch (error) {
     return errorResponse(error);
@@ -57,7 +59,7 @@ export async function DELETE(
     const deleted = await BlogPost.findByIdAndDelete(id).lean();
     if (!deleted) throw new HttpError(404, "Post not found.");
 
-    // NOTE: revalidatePath('/blog', '/') wired in step 3.23.
+    if (deleted.published) revalidateBlog(deleted.slug);
     return NextResponse.json({ success: true });
   } catch (error) {
     return errorResponse(error);

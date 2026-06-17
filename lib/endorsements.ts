@@ -141,7 +141,11 @@ export async function fetchAllAdminEndorsements(): Promise<EndorsementSummary[]>
 export async function setEndorsementStatus(
   id: string,
   status: EndorsementStatus,
-): Promise<{ id: string; status: EndorsementStatus } | null> {
+): Promise<{
+  id: string;
+  status: EndorsementStatus;
+  projectSlug?: string;
+} | null> {
   await dbConnect();
   const existing = await Endorsement.findById(id).select("status projectId").lean();
   if (!existing) return null;
@@ -161,7 +165,12 @@ export async function setEndorsementStatus(
     );
   }
 
-  return { id, status: updated.status };
+  // Slug lets the caller revalidate the attached project's detail page.
+  const project = existing.projectId
+    ? await Project.findById(existing.projectId).select("slug").lean()
+    : null;
+
+  return { id, status: updated.status, projectSlug: project?.slug };
 }
 
 // — Public read ———————————————————————————————————————————————————————————————

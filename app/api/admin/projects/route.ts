@@ -4,6 +4,7 @@ import { errorResponse, HttpError } from "@/lib/api";
 import { dbConnect } from "@/lib/db";
 import { Project } from "@/models/Project";
 import { fetchAdminProjects } from "@/lib/projects";
+import { revalidateProject } from "@/lib/revalidate";
 import { projectCreateSchema } from "@/lib/validations";
 
 // GET /api/admin/projects?page= — all projects incl. drafts (admin only).
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
     const project = await Project.create(data);
 
-    // NOTE: revalidatePath('/', '/projects', '/projects/[slug]') is wired in 3.23.
+    revalidateProject(project.slug);
     return NextResponse.json(
       { success: true, data: { id: String(project._id), slug: project.slug } },
       { status: 201 },

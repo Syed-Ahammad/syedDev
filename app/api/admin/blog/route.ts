@@ -4,6 +4,7 @@ import { errorResponse } from "@/lib/api";
 import { dbConnect } from "@/lib/db";
 import { BlogPost } from "@/models/BlogPost";
 import { fetchAdminPosts } from "@/lib/blog";
+import { revalidateBlog } from "@/lib/revalidate";
 import { blogCreateSchema } from "@/lib/validations";
 
 function slugify(title: string) {
@@ -48,7 +49,8 @@ export async function POST(request: NextRequest) {
       publishedAt: data.published ? new Date() : undefined,
     });
 
-    // NOTE: revalidatePath('/blog', '/') wired in step 3.23.
+    // Only published posts surface publicly, so drafts need no revalidation.
+    if (post.published) revalidateBlog(post.slug);
     return NextResponse.json(
       { success: true, data: { id: String(post._id), slug: post.slug } },
       { status: 201 },
