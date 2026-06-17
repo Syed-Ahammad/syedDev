@@ -1,6 +1,15 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, type ChangeEvent, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 type Values = {
   name: string;
@@ -43,18 +52,52 @@ function validate(values: Values): FieldErrors {
 }
 
 export function ProjectForm() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [banner, setBanner] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const nameId = useId();
   const taglineId = useId();
   const typeId = useId();
   const stackId = useId();
   const statusFieldId = useId();
+  const imageId = useId();
   const statusBannerId = useId();
+
+  async function onImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setBanner("");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Upload failed.");
+      }
+      setImageUrl(json.data.url);
+    } catch (err) {
+      setStatus("error");
+      setBanner(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function reset() {
+    setValues(EMPTY);
+    setErrors({});
+    setStatus("idle");
+    setBanner("");
+    setImageUrl("");
+  }
 
   function set<K extends keyof Values>(key: K, value: Values[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -77,12 +120,35 @@ export function ProjectForm() {
     setErrors({});
     setStatus("submitting");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setStatus("success");
-    setBanner(
-      `Project "${values.name}" looks good — persistence lands when /api/admin/projects is wired.`,
-    );
-    setValues(EMPTY);
+    try {
+      const payload = {
+        name: values.name.trim(),
+        slug: slugify(values.name),
+        tagline: values.tagline.trim(),
+        type: values.type,
+        stack: values.stack
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        status: values.status,
+        ...(imageUrl ? { image: imageUrl } : {}),
+      };
+      const res = await fetch("/api/admin/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Could not save the project.");
+      }
+      reset();
+      setOpen(false);
+      router.refresh();
+    } catch (err) {
+      setStatus("error");
+      setBanner(err instanceof Error ? err.message : "Could not save the project.");
+    }
   }
 
   if (!open) {
@@ -115,10 +181,7 @@ export function ProjectForm() {
           type="button"
           onClick={() => {
             setOpen(false);
-            setValues(EMPTY);
-            setErrors({});
-            setStatus("idle");
-            setBanner("");
+            reset();
           }}
           className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:text-coral"
         >
@@ -192,9 +255,29 @@ export function ProjectForm() {
         />
       </Field>
 
+      <Field id={imageId} label="Cover image">
+        <input
+          id={imageId}
+          type="file"
+          accept="image/*"
+          onChange={onImageChange}
+          disabled={uploading || status === "submitting"}
+          className={fieldClass}
+        />
+        {uploading && <p className="text-xs text-muted">Uploading…</p>}
+        {imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt="Cover preview"
+            className="mt-2 h-24 w-full max-w-xs rounded-lg border border-border object-cover"
+          />
+        )}
+      </Field>
+
       <button
         type="submit"
-        disabled={status === "submitting"}
+        disabled={status === "submitting" || uploading}
         className="inline-flex h-11 self-end items-center justify-center rounded-full bg-coral px-5 font-mono text-xs uppercase tracking-[0.14em] text-background transition-colors hover:bg-coral/90 disabled:opacity-60"
       >
         {status === "submitting" ? "Saving…" : "Save project"}

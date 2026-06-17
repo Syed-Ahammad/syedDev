@@ -34,6 +34,43 @@ export const loginSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
+export const PROJECT_STATUSES = ["live", "in-progress", "draft"] as const;
+
+const projectFields = {
+  name: z.string().trim().min(1, "Name is required."),
+  slug: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be kebab-case (e.g. my-project)."),
+  tagline: z.string().trim().optional(),
+  description: z.string().trim().optional(),
+  type: z.string().trim().optional(),
+  stack: z.array(z.string().trim()).optional(),
+  status: z.enum(PROJECT_STATUSES).optional(),
+  problem: z.string().optional(),
+  approach: z.string().optional(),
+  outcome: z.string().optional(),
+  year: z.number().int().optional(),
+  role: z.string().optional(),
+  links: z
+    .array(z.object({ label: z.string().min(1), href: z.string().min(1) }))
+    .optional(),
+  liveUrl: z.string().trim().optional(),
+  repoUrl: z.string().trim().optional(),
+  image: z.string().trim().optional(),
+  gallery: z.array(z.string().trim()).optional(),
+  keyInfo: z
+    .array(z.object({ label: z.string().min(1), value: z.string().min(1) }))
+    .optional(),
+  order: z.number().int().optional(),
+};
+
+export const projectCreateSchema = z.object(projectFields);
+export const projectUpdateSchema = z.object(projectFields).partial();
+
+export type ProjectCreateInput = z.infer<typeof projectCreateSchema>;
+export type ProjectUpdateInput = z.infer<typeof projectUpdateSchema>;
+
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name."),
   email: z.string().trim().pipe(z.email("Enter a valid email.")),

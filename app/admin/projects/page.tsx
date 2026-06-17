@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { ProjectTable } from "@/components/admin/ProjectTable";
 import { ProjectForm } from "@/components/admin/ProjectForm";
-import { MOCK_PROJECTS } from "@/lib/mock-projects";
+import { fetchAdminProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Projects — Admin · syed.dev",
 };
 
-export default function AdminProjectsPage() {
-  const projects = [...MOCK_PROJECTS].sort((a, b) => a.order - b.order);
+export const dynamic = "force-dynamic";
+
+export default async function AdminProjectsPage() {
+  const { items } = await fetchAdminProjects(1);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -21,13 +23,12 @@ export default function AdminProjectsPage() {
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
           Add, edit, and order the case studies that appear on the public site.
-          Persistence wires in at step 3.11.
         </p>
       </header>
 
       <ProjectForm />
 
-      <ProjectTable projects={projects} />
+      <ProjectTable projects={items} />
     </div>
   );
 }

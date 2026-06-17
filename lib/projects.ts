@@ -177,6 +177,56 @@ export async function getRelatedProjects(
     .lean<ProjectListItem[]>();
 }
 
+export const ADMIN_PROJECTS_PAGE_SIZE = 10;
+
+export type AdminProjectItem = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  type: string;
+  stack: string[];
+  status: IProject["status"];
+  order: number;
+  endorsementCount: number;
+  views: number;
+};
+
+/** All projects incl. drafts, paginated, for the admin table. */
+export async function fetchAdminProjects(page: number): Promise<{
+  items: AdminProjectItem[];
+  total: number;
+  page: number;
+  totalPages: number;
+}> {
+  await dbConnect();
+  const total = await Project.countDocuments({});
+  const totalPages = Math.max(1, Math.ceil(total / ADMIN_PROJECTS_PAGE_SIZE));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+
+  const docs = await Project.find({})
+    .sort({ order: 1 })
+    .skip((safePage - 1) * ADMIN_PROJECTS_PAGE_SIZE)
+    .limit(ADMIN_PROJECTS_PAGE_SIZE)
+    .select("slug name tagline type stack status order endorsementCount views")
+    .lean();
+
+  const items: AdminProjectItem[] = docs.map((p) => ({
+    id: String(p._id),
+    slug: p.slug,
+    name: p.name,
+    tagline: p.tagline ?? "",
+    type: p.type ?? "",
+    stack: p.stack ?? [],
+    status: p.status,
+    order: p.order,
+    endorsementCount: p.endorsementCount,
+    views: p.views,
+  }));
+
+  return { items, total, page: safePage, totalPages };
+}
+
 /** Slugs of all published projects, for generateStaticParams. */
 export async function getPublishedSlugs(): Promise<string[]> {
   await dbConnect();

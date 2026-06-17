@@ -30,6 +30,18 @@ export function errorResponse(error: unknown): NextResponse {
       { status: 400 },
     );
   }
+  // MongoDB duplicate-key (e.g. unique slug/email race) → 409.
+  if (
+    error &&
+    typeof error === "object" &&
+    "code" in error &&
+    (error as { code?: number }).code === 11000
+  ) {
+    return NextResponse.json(
+      { success: false, error: "That already exists." },
+      { status: 409 },
+    );
+  }
   console.error("Unhandled API error:", error);
   return NextResponse.json(
     { success: false, error: "Something went wrong." },

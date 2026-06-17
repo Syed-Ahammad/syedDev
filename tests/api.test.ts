@@ -17,6 +17,12 @@ describe("errorResponse", () => {
     expect(body.success).toBe(false);
   });
 
+  it("maps a MongoDB duplicate-key error to 409", async () => {
+    const dupe = Object.assign(new Error("E11000 duplicate key"), { code: 11000 });
+    const res = errorResponse(dupe);
+    expect(res.status).toBe(409);
+  });
+
   it("falls back to a logged 500 for unknown errors", async () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     const res = errorResponse(new Error("boom"));

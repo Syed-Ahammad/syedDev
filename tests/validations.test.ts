@@ -4,6 +4,8 @@ import {
   loginSchema,
   registerSchema,
   leadUpdateSchema,
+  projectCreateSchema,
+  projectUpdateSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -92,6 +94,37 @@ describe("registerSchema", () => {
 
   it("rejects a name shorter than 2 characters", () => {
     expect(registerSchema.safeParse({ ...valid, name: "A" }).success).toBe(false);
+  });
+});
+
+describe("projectCreateSchema", () => {
+  const valid = { name: "Dirham", slug: "dirham" };
+
+  it("accepts the minimum required fields", () => {
+    expect(projectCreateSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("requires a name", () => {
+    expect(projectCreateSchema.safeParse({ slug: "dirham" }).success).toBe(false);
+  });
+
+  it("rejects a non-kebab-case slug", () => {
+    expect(
+      projectCreateSchema.safeParse({ ...valid, slug: "Not Kebab" }).success,
+    ).toBe(false);
+  });
+
+  it("rejects an unknown status", () => {
+    expect(
+      projectCreateSchema.safeParse({ ...valid, status: "archived" }).success,
+    ).toBe(false);
+  });
+});
+
+describe("projectUpdateSchema", () => {
+  it("allows a partial update (e.g. status only)", () => {
+    expect(projectUpdateSchema.safeParse({ status: "live" }).success).toBe(true);
+    expect(projectUpdateSchema.safeParse({}).success).toBe(true);
   });
 });
 
