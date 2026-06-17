@@ -7,6 +7,7 @@ import { dbConnect } from "@/lib/db";
 import { User, type UserRole } from "@/models/User";
 import { loginSchema } from "@/lib/validations";
 import { HttpError } from "@/lib/api";
+import { loginLimiter, clientIp } from "@/lib/ratelimit";
 
 const providers: NextAuthConfig["providers"] = [
   Credentials({
@@ -14,11 +15,17 @@ const providers: NextAuthConfig["providers"] = [
       email: { label: "Email", type: "email" },
       password: { label: "Password", type: "password" },
     },
-    async authorize(credentials) {
+    async authorize(credentials, request) {
       const parsed = loginSchema.safeParse(credentials);
       if (!parsed.success) return null;
 
-      // NOTE: Upstash rate limiting (10/hr per IP) is wired in step 3.25.
+      // Throttle by IP. Fail closed: too many attempts → treat as a failed
+      // sign-in (NextAuth credentials can't surface a 429 to the client).
+      if (loginLimiter) {
+        const { success } = await loginLimiter.limit(clientIp(request));
+        if (!success) return null;
+      }
+
       await dbConnect();
       const user = await User.findOne({ email: parsed.data.email.toLowerCase() });
       if (!user || !user.passwordHash || user.suspended) return null;

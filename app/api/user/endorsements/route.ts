@@ -8,6 +8,7 @@ import { Project } from "@/models/Project";
 import { Profile } from "@/models/Profile";
 import { fetchUserEndorsements } from "@/lib/endorsements";
 import { endorsementSchema } from "@/lib/validations";
+import { enforceLimit, endorsementLimiter } from "@/lib/ratelimit";
 
 // GET /api/user/endorsements — the user's own endorsements (all statuses).
 export async function GET() {
@@ -24,6 +25,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await requireSession();
+    await enforceLimit(endorsementLimiter, session.user.id);
+
     const json = await request.json().catch(() => null);
     const { skill, text, projectId } = endorsementSchema.parse(json);
 
@@ -47,7 +50,6 @@ export async function POST(request: NextRequest) {
       throw new HttpError(409, "You've already endorsed this skill.");
     }
 
-    // NOTE: Upstash rate limiting (10/hr per user) is wired in step 3.25.
     const endorsement = await Endorsement.create({
       userId: session.user.id,
       skill,

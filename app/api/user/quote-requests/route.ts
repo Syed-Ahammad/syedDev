@@ -3,6 +3,7 @@ import { requireSession } from "@/lib/auth";
 import { errorResponse } from "@/lib/api";
 import { quoteRequestSchema } from "@/lib/validations";
 import { fetchUserQuotes, createQuoteRequest } from "@/lib/quotes";
+import { enforceLimit, quoteLimiter } from "@/lib/ratelimit";
 
 // GET /api/user/quote-requests — the signed-in user's own briefs.
 export async function GET() {
@@ -19,10 +20,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await requireSession();
+    await enforceLimit(quoteLimiter, session.user.id);
+
     const json = await request.json().catch(() => null);
     const input = quoteRequestSchema.parse(json);
 
-    // NOTE: Upstash rate limiting wired in step 3.25.
     const data = await createQuoteRequest({
       userId: session.user.id,
       name: session.user.name ?? "Member",

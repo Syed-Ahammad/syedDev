@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/models/User";
 import { registerSchema } from "@/lib/validations";
+import { HttpError } from "@/lib/api";
+import { enforceLimit, registerLimiter, clientIp } from "@/lib/ratelimit";
 
 // POST /api/auth/register — email/password registration (creates a `user` role).
 export async function POST(request: NextRequest) {
@@ -25,7 +27,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // NOTE: Upstash rate limiting (5/hr per IP) is wired in step 3.25.
+    await enforceLimit(registerLimiter, clientIp(request));
+
     await dbConnect();
     const email = parsed.data.email.toLowerCase();
     if (await User.findOne({ email })) {
@@ -46,6 +49,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
+    if (error instanceof HttpError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.status },
+      );
+    }
     // Unique-index race → treat as duplicate.
     if (
       error &&
