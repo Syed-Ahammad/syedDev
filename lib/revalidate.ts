@@ -23,3 +23,8 @@ export function revalidateEndorsements(projectSlug?: string) {
   revalidatePath("/"); // testimonials wall
   if (projectSlug) revalidatePath(`/projects/${projectSlug}`);
 }
+
+export function revalidateProfile() {
+  revalidatePath("/"); // hero / stats / faq driven by the profile
+  revalidatePath("/about"); // about page bio + facts
+}

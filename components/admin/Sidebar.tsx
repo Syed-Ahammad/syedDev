@@ -17,6 +17,7 @@ const ITEMS: Item[] = [
   { href: "/admin/endorsements", label: "Endorsements", glyph: "★" },
   { href: "/admin/users", label: "Users", glyph: "◉" },
   { href: "/admin/analytics", label: "Analytics", glyph: "▟" },
+  { href: "/admin/profile", label: "Profile", glyph: "✦" },
 ];
 
 function isActive(pathname: string, href: string) {

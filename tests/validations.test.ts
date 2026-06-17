@@ -14,6 +14,7 @@ import {
   quoteRequestSchema,
   profileUpdateSchema,
   userUpdateSchema,
+  adminProfileSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -258,6 +259,48 @@ describe("profileUpdateSchema", () => {
     expect(profileUpdateSchema.safeParse({ name: "A" }).success).toBe(false);
     expect(
       profileUpdateSchema.safeParse({ bio: "x".repeat(281) }).success,
+    ).toBe(false);
+  });
+});
+
+describe("adminProfileSchema", () => {
+  const valid = {
+    headline: "I build full-stack products that ship.",
+    subline: "Full-stack developer in Dubai.",
+    about: ["First paragraph.", "Second paragraph."],
+    facts: [{ label: "Based in", value: "Dubai, UAE" }],
+    skills: ["Next.js", "MongoDB"],
+    socials: [{ label: "GitHub", url: "https://github.com/x" }],
+    availability: true,
+    cvUrl: "",
+    faq: [{ q: "What do you build?", a: "Web apps." }],
+  };
+
+  it("accepts a complete profile and an empty partial", () => {
+    expect(adminProfileSchema.safeParse(valid).success).toBe(true);
+    expect(adminProfileSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("rejects an invalid social URL and an over-long headline", () => {
+    expect(
+      adminProfileSchema.safeParse({
+        ...valid,
+        socials: [{ label: "GitHub", url: "not-a-url" }],
+      }).success,
+    ).toBe(false);
+    expect(
+      adminProfileSchema.safeParse({ ...valid, headline: "x".repeat(161) })
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects facts/faq rows with empty fields", () => {
+    expect(
+      adminProfileSchema.safeParse({ ...valid, facts: [{ label: "", value: "y" }] })
+        .success,
+    ).toBe(false);
+    expect(
+      adminProfileSchema.safeParse({ ...valid, faq: [{ q: "Q?", a: "" }] }).success,
     ).toBe(false);
   });
 });

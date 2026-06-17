@@ -93,6 +93,39 @@ export const userUpdateSchema = z
 
 export type UserUpdateInput = z.infer<typeof userUpdateSchema>;
 
+// Admin-editable Profile singleton. `.partial()` lets a PATCH send a subset;
+// the editor sends the whole object. Empty arrays/strings are valid.
+export const adminProfileSchema = z
+  .object({
+    headline: z.string().trim().max(160),
+    subline: z.string().trim().max(400),
+    about: z.array(z.string().trim().min(1)),
+    facts: z.array(
+      z.object({
+        label: z.string().trim().min(1),
+        value: z.string().trim().min(1),
+      }),
+    ),
+    skills: z.array(z.string().trim().min(1)),
+    socials: z.array(
+      z.object({
+        label: z.string().trim().min(1),
+        url: z.string().trim().pipe(z.url("Enter a valid social URL.")),
+      }),
+    ),
+    availability: z.boolean(),
+    cvUrl: z.string().trim(),
+    faq: z.array(
+      z.object({
+        q: z.string().trim().min(1),
+        a: z.string().trim().min(1),
+      }),
+    ),
+  })
+  .partial();
+
+export type AdminProfileInput = z.infer<typeof adminProfileSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

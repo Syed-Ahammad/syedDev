@@ -58,6 +58,23 @@ export type UserRole = "user" | "admin";
 
 export type UserStatus = "active" | "suspended";
 
+export type ProfileFact = { label: string; value: string };
+export type ProfileSocial = { label: string; url: string };
+export type ProfileFaq = { q: string; a: string };
+
+// Editable shape of the Profile singleton (GET/PATCH /api/admin/profile).
+export type AdminProfile = {
+  headline: string;
+  subline: string;
+  about: string[];
+  facts: ProfileFact[];
+  skills: string[];
+  socials: ProfileSocial[];
+  availability: boolean;
+  cvUrl: string;
+  faq: ProfileFaq[];
+};
+
 // Real counts for the admin overview cards (GET /api/admin/stats).
 export type AdminStats = {
   projects: { total: number; published: number };
