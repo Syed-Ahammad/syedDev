@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { leadSchema, loginSchema, registerSchema } from "@/lib/validations";
+import {
+  leadSchema,
+  loginSchema,
+  registerSchema,
+  leadUpdateSchema,
+} from "@/lib/validations";
 
 const valid = {
   name: "Omar Al-Rashid",
@@ -87,5 +92,17 @@ describe("registerSchema", () => {
 
   it("rejects a name shorter than 2 characters", () => {
     expect(registerSchema.safeParse({ ...valid, name: "A" }).success).toBe(false);
+  });
+});
+
+describe("leadUpdateSchema", () => {
+  it("accepts the known lead statuses", () => {
+    for (const status of ["new", "read", "replied", "closed"]) {
+      expect(leadUpdateSchema.safeParse({ status }).success).toBe(true);
+    }
+  });
+
+  it("rejects unknown statuses", () => {
+    expect(leadUpdateSchema.safeParse({ status: "won" }).success).toBe(false);
   });
 });

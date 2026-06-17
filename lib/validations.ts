@@ -6,6 +6,13 @@ import { z } from "zod";
  */
 
 export const LEAD_SOURCES = ["portfolio", "newsletter", "quote-request"] as const;
+export const LEAD_STATUSES = ["new", "read", "replied", "closed"] as const;
+
+export const leadUpdateSchema = z.object({
+  status: z.enum(LEAD_STATUSES),
+});
+
+export type LeadUpdateInput = z.infer<typeof leadUpdateSchema>;
 
 export const leadSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name."),
