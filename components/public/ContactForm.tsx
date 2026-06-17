@@ -1,19 +1,11 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { leadSchema, type LeadInput } from "@/lib/validations";
 
-type Status = "idle" | "submitting" | "success" | "error";
-
-type Values = {
-  name: string;
-  email: string;
-  projectType: string;
-  message: string;
-};
-
-type FieldErrors = Partial<Record<keyof Values, string>>;
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type Outcome = "idle" | "success" | "error";
 
 const PROJECT_TYPES = [
   "Web app or dashboard",
@@ -23,16 +15,6 @@ const PROJECT_TYPES = [
   "Something else",
 ];
 
-function validate(values: Values): FieldErrors {
-  const errors: FieldErrors = {};
-  if (values.name.trim().length < 2) errors.name = "Please enter your name.";
-  if (!EMAIL_RE.test(values.email.trim()))
-    errors.email = "Enter a valid email — I'll only use it to reply.";
-  if (values.message.trim().length < 20)
-    errors.message = "Tell me a bit more — at least 20 characters helps.";
-  return errors;
-}
-
 export function ContactForm() {
   const nameId = useId();
   const emailId = useId();
@@ -40,44 +22,49 @@ export function ContactForm() {
   const messageId = useId();
   const statusId = useId();
 
-  const [values, setValues] = useState<Values>({
-    name: "",
-    email: "",
-    projectType: "",
-    message: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<LeadInput>({
+    resolver: zodResolver(leadSchema),
+    defaultValues: { name: "", email: "", projectType: "", message: "" },
   });
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [status, setStatus] = useState<Status>("idle");
+
+  const [outcome, setOutcome] = useState<Outcome>("idle");
   const [banner, setBanner] = useState("");
 
-  function set<K extends keyof Values>(key: K, value: Values[K]) {
-    setValues((prev) => ({ ...prev, [key]: value }));
-    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
-    if (status !== "idle") {
-      setStatus("idle");
-      setBanner("");
-    }
-  }
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const fieldErrors = validate(values);
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors);
-      setStatus("error");
-      setBanner("Please fix the highlighted fields and try again.");
-      return;
-    }
-    setErrors({});
-    setStatus("submitting");
+  async function onValid(data: LeadInput) {
+    setOutcome("idle");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setStatus("success");
-    setBanner("Thanks — I'll reply within 24 hours.");
-    setValues({ name: "", email: "", projectType: "", message: "" });
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, source: "portfolio" }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.success) {
+        throw new Error(body?.error ?? "Something went wrong. Please try again.");
+      }
+      setOutcome("success");
+      setBanner("Thanks — I'll reply within 24 hours.");
+      reset();
+    } catch (err) {
+      setOutcome("error");
+      setBanner(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+      );
+    }
   }
 
-  const submitting = status === "submitting";
+  function onInvalid() {
+    setOutcome("error");
+    setBanner("Please fix the highlighted fields and try again.");
+  }
+
+  const submitting = isSubmitting;
 
   return (
     <section
@@ -109,7 +96,7 @@ export function ContactForm() {
         </div>
 
         <form
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit(onValid, onInvalid)}
           noValidate
           aria-describedby={banner ? statusId : undefined}
           className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-6 md:p-8"
@@ -117,20 +104,17 @@ export function ContactForm() {
           <Field
             id={nameId}
             label="Your name"
-            error={errors.name}
+            error={errors.name?.message}
             input={
               <input
                 id={nameId}
-                name="name"
                 type="text"
                 autoComplete="name"
-                required
-                value={values.name}
-                onChange={(e) => set("name", e.target.value)}
                 disabled={submitting}
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? `${nameId}-err` : undefined}
                 className={fieldClass}
+                {...register("name")}
               />
             }
           />
@@ -138,21 +122,18 @@ export function ContactForm() {
           <Field
             id={emailId}
             label="Email"
-            error={errors.email}
+            error={errors.email?.message}
             input={
               <input
                 id={emailId}
-                name="email"
                 type="email"
                 inputMode="email"
                 autoComplete="email"
-                required
-                value={values.email}
-                onChange={(e) => set("email", e.target.value)}
                 disabled={submitting}
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? `${emailId}-err` : undefined}
                 className={fieldClass}
+                {...register("email")}
               />
             }
           />
@@ -165,11 +146,9 @@ export function ContactForm() {
             input={
               <select
                 id={typeId}
-                name="projectType"
-                value={values.projectType}
-                onChange={(e) => set("projectType", e.target.value)}
                 disabled={submitting}
                 className={fieldClass}
+                {...register("projectType")}
               >
                 <option value="">Pick the closest match…</option>
                 {PROJECT_TYPES.map((t) => (
@@ -184,19 +163,16 @@ export function ContactForm() {
           <Field
             id={messageId}
             label="Tell me about it"
-            error={errors.message}
+            error={errors.message?.message}
             input={
               <textarea
                 id={messageId}
-                name="message"
-                required
                 rows={5}
-                value={values.message}
-                onChange={(e) => set("message", e.target.value)}
                 disabled={submitting}
                 aria-invalid={!!errors.message}
                 aria-describedby={errors.message ? `${messageId}-err` : undefined}
                 className={`${fieldClass} min-h-[120px] resize-y`}
+                {...register("message")}
               />
             }
           />
@@ -214,7 +190,7 @@ export function ContactForm() {
             role="status"
             aria-live="polite"
             className={`min-h-[1.25rem] text-sm ${
-              status === "error" ? "text-coral" : "text-teal"
+              outcome === "error" ? "text-coral" : "text-teal"
             }`}
           >
             {banner}
