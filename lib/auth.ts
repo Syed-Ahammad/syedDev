@@ -2,6 +2,7 @@ import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
+import { authConfig } from "@/lib/auth.config";
 import { dbConnect } from "@/lib/db";
 import { User } from "@/models/User";
 import { loginSchema } from "@/lib/validations";
@@ -48,14 +49,12 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
-export const authConfig: NextAuthConfig = {
-  // v5 prefers AUTH_SECRET; fall back to the NEXTAUTH_SECRET used in our docs.
-  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
-  trustHost: true,
-  session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
+// Full config = edge-safe base + DB-backed providers and callbacks.
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers,
   callbacks: {
+    ...authConfig.callbacks,
     // Google has no DB adapter here, so create/verify the user ourselves.
     async signIn({ user, account }) {
       if (account?.provider !== "google") return true;
@@ -97,15 +96,5 @@ export const authConfig: NextAuthConfig = {
       }
       return token;
     },
-    // Expose id + role to the session consumed by server/client.
-    session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-      }
-      return session;
-    },
   },
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+});
