@@ -1,11 +1,12 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+import NextAuth, { type NextAuthConfig, type Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { authConfig } from "@/lib/auth.config";
 import { dbConnect } from "@/lib/db";
-import { User } from "@/models/User";
+import { User, type UserRole } from "@/models/User";
 import { loginSchema } from "@/lib/validations";
+import { HttpError } from "@/lib/api";
 
 const providers: NextAuthConfig["providers"] = [
   Credentials({
@@ -98,3 +99,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+/** Require a signed-in user; throws 401 otherwise. For API route handlers. */
+export async function requireSession(): Promise<Session> {
+  const session = await auth();
+  if (!session?.user) {
+    throw new HttpError(401, "You must be signed in.");
+  }
+  return session;
+}
+
+/** Require a signed-in user with the given role; throws 401/403 otherwise. */
+export async function requireRole(role: UserRole): Promise<Session> {
+  const session = await requireSession();
+  if (session.user.role !== role) {
+    throw new HttpError(403, "You don't have permission to do that.");
+  }
+  return session;
+}
