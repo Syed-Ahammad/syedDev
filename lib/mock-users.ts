@@ -1,0 +1,58 @@
+import type { AdminUser } from "@/types";
+
+export const MOCK_USERS: AdminUser[] = [
+  {
+    id: "user-01",
+    name: "Syed Ahammad",
+    email: "admin@syed.dev",
+    role: "admin",
+    status: "active",
+    joinedAt: "2025-09-01T00:00:00Z",
+    lastActiveAt: "2026-06-15T22:31:00Z",
+  },
+  {
+    id: "user-02",
+    name: "Demo User",
+    email: "demo@syed.dev",
+    role: "user",
+    status: "active",
+    joinedAt: "2025-10-12T00:00:00Z",
+    lastActiveAt: "2026-06-14T08:45:00Z",
+  },
+  {
+    id: "user-03",
+    name: "Maya Daher",
+    email: "maya@florabox.ae",
+    role: "user",
+    status: "active",
+    joinedAt: "2026-01-08T00:00:00Z",
+    lastActiveAt: "2026-06-15T10:42:00Z",
+  },
+  {
+    id: "user-04",
+    name: "Reema Saleh",
+    email: "reema.s@brewlab.co",
+    role: "user",
+    status: "active",
+    joinedAt: "2026-02-19T00:00:00Z",
+    lastActiveAt: "2026-06-12T14:30:00Z",
+  },
+  {
+    id: "user-05",
+    name: "Owen Park",
+    email: "owen.park@kettlecorp.io",
+    role: "user",
+    status: "active",
+    joinedAt: "2026-03-04T00:00:00Z",
+    lastActiveAt: "2026-06-10T09:14:00Z",
+  },
+  {
+    id: "user-06",
+    name: "Suspicious Account",
+    email: "bot+24@temp-mail.test",
+    role: "user",
+    status: "suspended",
+    joinedAt: "2026-04-22T00:00:00Z",
+    lastActiveAt: "2026-04-22T03:08:00Z",
+  },
+];

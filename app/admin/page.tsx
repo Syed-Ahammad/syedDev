@@ -1,26 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { StatCard } from "@/components/admin/StatCard";
+import { ADMIN_STATS } from "@/lib/mock-analytics";
+import { MOCK_LEADS } from "@/lib/mock-leads";
 
 export const metadata: Metadata = {
   title: "Admin overview — syed.dev",
 };
 
-type Card = {
-  label: string;
-  hint: string;
-  href: string;
-};
-
-const CARDS: Card[] = [
-  { label: "Projects", hint: "Add, edit, and archive case studies.", href: "/admin/projects" },
-  { label: "Leads", hint: "Triage incoming contact requests.", href: "/admin/leads" },
-  { label: "Blog", hint: "Draft and publish posts.", href: "/admin/blog" },
-  { label: "Endorsements", hint: "Approve or reject community endorsements.", href: "/admin/endorsements" },
-  { label: "Users", hint: "Manage roles and access.", href: "/admin/users" },
-  { label: "Analytics", hint: "Track visits, leads, and engagement.", href: "/admin/analytics" },
-];
+const DATE = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+});
 
 export default function AdminOverviewPage() {
+  const recentLeads = MOCK_LEADS.slice(0, 4);
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
       <header className="flex flex-col gap-3">
@@ -28,42 +23,92 @@ export default function AdminOverviewPage() {
           / overview
         </p>
         <h1 className="font-display text-3xl font-semibold text-foreground md:text-4xl">
-          Admin shell is live
+          Last 30 days at a glance
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
-          This is the empty admin shell. Real stat cards, tables, and forms land
-          in step 2.22 once the mock data is wired in. The sidebar already routes
-          to every section the rubric calls for.
+          All numbers below are mock — they swap to real data once the API routes
+          land in Phase 3.
         </p>
       </header>
 
       <section
-        aria-labelledby="admin-sections-heading"
-        className="flex flex-col gap-6"
+        aria-labelledby="admin-stats-heading"
+        className="flex flex-col gap-4"
       >
-        <h2
-          id="admin-sections-heading"
-          className="font-display text-xl font-semibold text-foreground"
-        >
-          What lives in each section
+        <h2 id="admin-stats-heading" className="sr-only">
+          Headline stats
         </h2>
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {CARDS.map((card) => (
-            <li key={card.href}>
-              <Link
-                href={card.href}
-                className="flex h-full flex-col gap-2 rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-coral"
-              >
-                <span className="font-display text-base font-semibold text-foreground">
-                  {card.label}
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <li>
+            <StatCard
+              label="Projects"
+              value={String(ADMIN_STATS.projects)}
+              trend="2 published this month"
+              hint="Includes drafts and archived case studies."
+            />
+          </li>
+          <li>
+            <StatCard
+              label="Leads"
+              value={String(ADMIN_STATS.leads)}
+              trend="+3 vs prior 30 days"
+              hint="New contact requests across all sources."
+            />
+          </li>
+          <li>
+            <StatCard
+              label="Endorsements"
+              value={String(ADMIN_STATS.endorsements)}
+              trend="4 awaiting review"
+              hint="Skill endorsements from logged-in users."
+            />
+          </li>
+          <li>
+            <StatCard
+              label="Visits"
+              value={ADMIN_STATS.visits.toLocaleString("en-GB")}
+              trend="+18% week over week"
+              hint="Unique sessions across the public site."
+            />
+          </li>
+        </ul>
+      </section>
+
+      <section
+        aria-labelledby="admin-recent-heading"
+        className="flex flex-col gap-4"
+      >
+        <div className="flex items-end justify-between gap-4">
+          <h2
+            id="admin-recent-heading"
+            className="font-display text-xl font-semibold text-foreground"
+          >
+            Recent leads
+          </h2>
+          <Link
+            href="/admin/leads"
+            className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-coral transition-colors hover:text-foreground"
+          >
+            See all →
+          </Link>
+        </div>
+        <ul className="flex flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
+          {recentLeads.map((lead) => (
+            <li
+              key={lead.id}
+              className="flex flex-col gap-2 px-5 py-4 md:flex-row md:items-center md:justify-between"
+            >
+              <div className="flex flex-col gap-1">
+                <span className="font-display text-sm font-medium text-foreground">
+                  {lead.name}
                 </span>
-                <span className="text-sm leading-relaxed text-muted">
-                  {card.hint}
+                <span className="text-xs leading-relaxed text-muted">
+                  {lead.projectType} · via {lead.source}
                 </span>
-                <span className="mt-auto pt-3 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-coral">
-                  Open →
-                </span>
-              </Link>
+              </div>
+              <span className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted">
+                {DATE.format(new Date(lead.receivedAt))}
+              </span>
             </li>
           ))}
         </ul>

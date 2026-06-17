@@ -7,6 +7,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Shipped our admin dashboard in two weeks — App Router, server components, the whole thing. Clean code, sensible commits, and it just worked on launch day.",
     endorserName: "Rashed Al-Mansoori",
     endorserRole: "Founder, Mansoori Trading",
+    status: "approved",
+    submittedAt: "2026-03-12T10:14:00Z",
   },
   {
     id: "e2",
@@ -14,6 +16,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Modeled our inventory and purchasing system without over-engineering. Indexes were thought through; nothing slowed down as we crossed 50k SKUs.",
     endorserName: "Priya Nair",
     endorserRole: "Ops Manager, Coastal Foods",
+    status: "approved",
+    submittedAt: "2026-03-25T15:42:00Z",
   },
   {
     id: "e3",
@@ -21,6 +25,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Took our untyped Express codebase and migrated it to strict TS over a sprint. Caught three latent bugs along the way and left the team comfortable maintaining it.",
     endorserName: "Daniel Okafor",
     endorserRole: "Tech Lead, Brightline",
+    status: "approved",
+    submittedAt: "2026-04-02T09:03:00Z",
   },
   {
     id: "e4",
@@ -28,6 +34,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Communicates trade-offs clearly — when to use a server component, when client. Reviews are honest and the patterns he picks scale with the product.",
     endorserName: "Sara Haddad",
     endorserRole: "Product Designer, Linear Studio",
+    status: "approved",
+    submittedAt: "2026-04-18T13:21:00Z",
   },
   {
     id: "e5",
@@ -35,6 +43,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Built an order-processing pipeline that handles our peak Friday traffic without retries piling up. Logging and error handling were thought through from day one.",
     endorserName: "Mohammed Iqbal",
     endorserRole: "CTO, Groceri",
+    status: "approved",
+    submittedAt: "2026-04-29T17:55:00Z",
   },
   {
     id: "e6",
@@ -42,6 +52,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Wired up credentials + Google OAuth with the right session shape on both server and edge. No flaky redirects, no leaked tokens — exactly what you want from auth.",
     endorserName: "Lina Petrova",
     endorserRole: "Senior Engineer, Voltspark",
+    status: "approved",
+    submittedAt: "2026-05-08T11:18:00Z",
   },
   {
     id: "e7",
@@ -49,6 +61,8 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Took our messy stylesheet and gave us a tidy design-token system in Tailwind v4. The site finally looks consistent in light and dark mode.",
     endorserName: "Tomás Reyes",
     endorserRole: "Frontend Lead, Mileta",
+    status: "approved",
+    submittedAt: "2026-05-15T08:46:00Z",
   },
   {
     id: "e8",
@@ -56,5 +70,34 @@ export const MOCK_ENDORSEMENTS: Endorsement[] = [
     text: "Documented every endpoint with a Zod schema and matching tests. Onboarding the next developer took a day instead of a week.",
     endorserName: "Aisha Mahmoud",
     endorserRole: "Engineering Manager, Saheel Labs",
+    status: "approved",
+    submittedAt: "2026-05-22T14:09:00Z",
+  },
+  {
+    id: "e9",
+    skill: "Vercel deploys",
+    text: "Set up the preview environment so every PR gets a shareable URL — that alone changed how our product team reviews work.",
+    endorserName: "Henrik Vossberg",
+    endorserRole: "Product Manager, Atlasly",
+    status: "pending",
+    submittedAt: "2026-06-12T20:31:00Z",
+  },
+  {
+    id: "e10",
+    skill: "Stripe integrations",
+    text: "Hooked Stripe into our checkout cleanly — webhooks, idempotency keys, refund flow. Didn't need to be told twice about the edge cases.",
+    endorserName: "Nadia Younis",
+    endorserRole: "Founder, Floura UAE",
+    status: "pending",
+    submittedAt: "2026-06-14T09:12:00Z",
+  },
+  {
+    id: "e11",
+    skill: "Mongoose",
+    text: "Schemas were thoughtful — discriminators where we actually needed them, plain shapes where we didn't. No premature abstraction.",
+    endorserName: "Jorge Velasquez",
+    endorserRole: "Staff Engineer, Mantle",
+    status: "pending",
+    submittedAt: "2026-06-15T07:47:00Z",
   },
 ];

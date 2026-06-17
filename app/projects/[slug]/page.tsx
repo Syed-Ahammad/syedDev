@@ -40,8 +40,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const matchTerms = new Set(
     [project.type, ...project.stack].map((s) => s.toLowerCase()),
   );
-  const endorsements = MOCK_ENDORSEMENTS.filter((e) =>
-    matchTerms.has(e.skill.toLowerCase()),
+  const endorsements = MOCK_ENDORSEMENTS.filter(
+    (e) => e.status === "approved" && matchTerms.has(e.skill.toLowerCase()),
   ).slice(0, 3);
 
   const related = MOCK_PROJECTS.filter(

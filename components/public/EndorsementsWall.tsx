@@ -3,7 +3,9 @@ import { EndorsementCard } from "./EndorsementCard";
 import { MOCK_ENDORSEMENTS } from "@/lib/mock-endorsements";
 
 export function EndorsementsWall() {
-  const endorsements = MOCK_ENDORSEMENTS.slice(0, 8);
+  const endorsements = MOCK_ENDORSEMENTS.filter(
+    (e) => e.status === "approved",
+  ).slice(0, 8);
 
   return (
     <section
