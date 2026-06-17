@@ -6,6 +6,7 @@ import {
   leadUpdateSchema,
   projectCreateSchema,
   projectUpdateSchema,
+  bookmarkSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -125,6 +126,14 @@ describe("projectUpdateSchema", () => {
   it("allows a partial update (e.g. status only)", () => {
     expect(projectUpdateSchema.safeParse({ status: "live" }).success).toBe(true);
     expect(projectUpdateSchema.safeParse({}).success).toBe(true);
+  });
+});
+
+describe("bookmarkSchema", () => {
+  it("requires a non-empty projectId", () => {
+    expect(bookmarkSchema.safeParse({ projectId: "abc123" }).success).toBe(true);
+    expect(bookmarkSchema.safeParse({ projectId: "" }).success).toBe(false);
+    expect(bookmarkSchema.safeParse({}).success).toBe(false);
   });
 });
 

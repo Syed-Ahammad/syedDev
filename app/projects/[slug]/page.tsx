@@ -7,6 +7,7 @@ import { ProjectOverview } from "@/components/public/ProjectOverview";
 import { ProjectKeyInfo } from "@/components/public/ProjectKeyInfo";
 import { ProjectEndorsements } from "@/components/public/ProjectEndorsements";
 import { RelatedProjects } from "@/components/public/RelatedProjects";
+import { BookmarkButton } from "@/components/public/BookmarkButton";
 import {
   getProjectBySlug,
   getRelatedProjects,
@@ -59,6 +60,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       <main className="flex flex-1 flex-col px-6 py-12 md:px-12 md:py-16">
         <div className="mx-auto w-full max-w-6xl">
           <ProjectDetailHeader project={project} />
+
+          <div className="mb-10">
+            <BookmarkButton projectId={project.id} />
+          </div>
 
           <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_280px] md:gap-12">
             <ProjectOverview detail={project} />

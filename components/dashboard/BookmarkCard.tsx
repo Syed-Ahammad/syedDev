@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Bookmark } from "@/types";
+import { RemoveBookmarkButton } from "./RemoveBookmarkButton";
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 
@@ -54,13 +55,10 @@ export function BookmarkCard({ bookmark }: Props) {
         >
           View project →
         </Link>
-        <button
-          type="button"
-          aria-label={`Remove ${bookmark.projectName} bookmark`}
-          className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:text-coral"
-        >
-          Remove
-        </button>
+        <RemoveBookmarkButton
+          bookmarkId={bookmark.id}
+          projectName={bookmark.projectName}
+        />
       </div>
     </article>
   );

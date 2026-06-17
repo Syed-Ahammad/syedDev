@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookmarkCard } from "@/components/dashboard/BookmarkCard";
-import { MOCK_BOOKMARKS } from "@/lib/mock-bookmarks";
+import { auth } from "@/lib/auth";
+import { fetchUserBookmarks } from "@/lib/bookmarks";
 
 export const metadata: Metadata = {
   title: "Bookmarks — syed.dev",
 };
 
-export default function BookmarksPage() {
-  const bookmarks = [...MOCK_BOOKMARKS].sort((a, b) =>
-    b.bookmarkedAt.localeCompare(a.bookmarkedAt),
-  );
+export const dynamic = "force-dynamic";
+
+export default async function BookmarksPage() {
+  const session = await auth();
+  const bookmarks = session?.user
+    ? await fetchUserBookmarks(session.user.id)
+    : [];
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -22,8 +26,7 @@ export default function BookmarksPage() {
           Projects you&apos;ve saved
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
-          Bookmark anything that gives you ideas for your own builds. The Remove
-          button is wired in Phase 3 once /api/user/bookmarks ships.
+          Bookmark anything that gives you ideas for your own builds.
         </p>
       </header>
 

@@ -27,6 +27,12 @@ export const leadSchema = z.object({
 
 export type LeadInput = z.infer<typeof leadSchema>;
 
+export const bookmarkSchema = z.object({
+  projectId: z.string().min(1, "projectId is required."),
+});
+
+export type BookmarkInput = z.infer<typeof bookmarkSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

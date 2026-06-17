@@ -1,4 +1,4 @@
-import type { QueryFilter } from "mongoose";
+import type { QueryFilter, Types } from "mongoose";
 import { dbConnect } from "@/lib/db";
 import { Project, type IProject } from "@/models/Project";
 import type {
@@ -6,8 +6,10 @@ import type {
   ProjectDetail,
 } from "@/types";
 
-/** A single project record carrying both list fields and detail fields. */
-export type ProjectWithDetail = ProjectListItem & ProjectDetail;
+/** A single project record carrying its id plus list + detail fields. */
+export type ProjectWithDetail = ProjectListItem & ProjectDetail & { id: string };
+
+type ProjectDoc = IProject & { _id: Types.ObjectId };
 
 const LIST_FIELDS = "slug name tagline type stack status order";
 const DETAIL_FIELDS = `${LIST_FIELDS} problem approach outcome year role links`;
@@ -110,8 +112,9 @@ export async function fetchProjects(
 
 /** Shape a raw project doc into the detail record, filling missing fields with
  *  safe fallbacks so the UI never renders "undefined". */
-function mapDetail(doc: IProject): ProjectWithDetail {
+function mapDetail(doc: ProjectDoc): ProjectWithDetail {
   return {
+    id: String(doc._id),
     slug: doc.slug,
     name: doc.name,
     tagline: doc.tagline ?? "",
@@ -138,7 +141,7 @@ export async function getProjectBySlug(
   await dbConnect();
   const doc = await Project.findOne({ slug, status: { $ne: "draft" } })
     .select(DETAIL_FIELDS)
-    .lean<IProject | null>();
+    .lean<ProjectDoc | null>();
   return doc ? mapDetail(doc) : null;
 }
 
@@ -156,7 +159,7 @@ export async function getProjectBySlugCountingView(
     { new: true },
   )
     .select(DETAIL_FIELDS)
-    .lean<IProject | null>();
+    .lean<ProjectDoc | null>();
   return doc ? mapDetail(doc) : null;
 }
 
