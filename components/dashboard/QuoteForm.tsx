@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 type Values = {
   title: string;
@@ -52,6 +53,7 @@ function validate(values: Values): FieldErrors {
 }
 
 export function QuoteForm() {
+  const router = useRouter();
   const [values, setValues] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
@@ -85,12 +87,30 @@ export function QuoteForm() {
     setErrors({});
     setStatus("submitting");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setStatus("success");
-    setBanner(
-      `Brief "${values.title}" queued — you'll see it in the list once /api/user/quotes is wired.`,
-    );
-    setValues(EMPTY);
+    try {
+      const res = await fetch("/api/user/quote-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: values.title.trim(),
+          projectType: values.projectType,
+          budget: values.budget,
+          timeline: values.timeline,
+          brief: values.brief.trim(),
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Could not send your brief.");
+      }
+      setStatus("success");
+      setBanner(`Brief "${values.title}" sent — I'll reply here soon.`);
+      setValues(EMPTY);
+      router.refresh();
+    } catch (err) {
+      setStatus("error");
+      setBanner(err instanceof Error ? err.message : "Could not send your brief.");
+    }
   }
 
   return (

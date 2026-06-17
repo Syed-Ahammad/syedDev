@@ -53,6 +53,18 @@ export const endorsementModerationSchema = z.object({
 
 export type EndorsementModerationInput = z.infer<typeof endorsementModerationSchema>;
 
+// Mirrors the QuoteForm client rules. A quote request is stored as a Lead
+// (source: 'quote-request') with the brief in `message`.
+export const quoteRequestSchema = z.object({
+  title: z.string().trim().min(4, "Give it a short title — at least 4 characters."),
+  projectType: z.string().trim().min(1, "Pick a project type."),
+  budget: z.string().trim().min(1, "Pick a budget range."),
+  timeline: z.string().trim().min(1, "Pick a timeline."),
+  brief: z.string().trim().min(40, "Brief should be at least 40 characters."),
+});
+
+export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

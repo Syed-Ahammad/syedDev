@@ -11,6 +11,7 @@ import {
   endorsementModerationSchema,
   blogCreateSchema,
   blogUpdateSchema,
+  quoteRequestSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -207,6 +208,32 @@ describe("endorsementModerationSchema", () => {
       false,
     );
     expect(endorsementModerationSchema.safeParse({}).success).toBe(false);
+  });
+});
+
+describe("quoteRequestSchema", () => {
+  const valid = {
+    title: "Bakery storefront",
+    projectType: "Landing page or storefront",
+    budget: "AED 5k – 10k",
+    timeline: "3–4 weeks",
+    brief: "We run a JLT bakery and want a pickup-ordering storefront with WhatsApp.",
+  };
+
+  it("accepts a complete brief", () => {
+    expect(quoteRequestSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("requires a title, type, budget, timeline, and a 40+ char brief", () => {
+    expect(quoteRequestSchema.safeParse({ ...valid, title: "Hi" }).success).toBe(false);
+    expect(quoteRequestSchema.safeParse({ ...valid, projectType: "" }).success).toBe(
+      false,
+    );
+    expect(quoteRequestSchema.safeParse({ ...valid, budget: "" }).success).toBe(false);
+    expect(quoteRequestSchema.safeParse({ ...valid, timeline: "" }).success).toBe(false);
+    expect(quoteRequestSchema.safeParse({ ...valid, brief: "too short" }).success).toBe(
+      false,
+    );
   });
 });
 

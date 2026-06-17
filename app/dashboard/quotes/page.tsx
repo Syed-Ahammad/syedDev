@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { QuoteForm } from "@/components/dashboard/QuoteForm";
 import { QuoteList } from "@/components/dashboard/QuoteList";
-import { MOCK_QUOTES } from "@/lib/mock-quotes";
+import { auth } from "@/lib/auth";
+import { fetchUserQuotes } from "@/lib/quotes";
 
 export const metadata: Metadata = {
   title: "Quote requests — syed.dev",
 };
 
-export default function DashboardQuotesPage() {
-  const quotes = [...MOCK_QUOTES].sort((a, b) =>
-    b.submittedAt.localeCompare(a.submittedAt),
-  );
+export const dynamic = "force-dynamic";
+
+export default async function DashboardQuotesPage() {
+  const session = await auth();
+  const quotes = session?.user ? await fetchUserQuotes(session.user.id) : [];
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">

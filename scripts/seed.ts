@@ -13,10 +13,13 @@ import { Project } from "../models/Project";
 import { BlogPost } from "../models/BlogPost";
 import { Profile } from "../models/Profile";
 import { Endorsement } from "../models/Endorsement";
+import { Lead, type LeadStatus } from "../models/Lead";
 import { MOCK_PROJECTS } from "../lib/mock-projects";
 import { MOCK_PROJECT_DETAILS } from "../lib/mock-project-details";
 import { MOCK_BLOG_POSTS } from "../lib/mock-blog";
 import { MOCK_ENDORSEMENTS } from "../lib/mock-endorsements";
+import { MOCK_QUOTES } from "../lib/mock-quotes";
+import type { QuoteStatus } from "../types";
 
 function loadEnv() {
   for (const file of [".env.local", ".env"]) {
@@ -188,6 +191,43 @@ async function seedEndorsements() {
   return MOCK_ENDORSEMENTS.length;
 }
 
+// Quote requests are leads (source: 'quote-request') owned by the demo user.
+const QUOTE_STATUS_MAP: Record<QuoteStatus, LeadStatus> = {
+  new: "new",
+  "in-review": "read",
+  responded: "replied",
+  closed: "closed",
+};
+
+async function seedQuotes() {
+  const demoEmail = env(
+    "DEMO_USER_EMAIL",
+    env("NEXT_PUBLIC_DEMO_USER_EMAIL", "demo@syed.dev"),
+  ).toLowerCase();
+  const demo = await User.findOne({ email: demoEmail });
+  if (!demo) return 0;
+
+  for (const q of MOCK_QUOTES) {
+    await Lead.findOneAndUpdate(
+      { userId: demo._id, source: "quote-request", title: q.title },
+      {
+        $set: {
+          name: demo.name,
+          email: demo.email,
+          message: q.brief,
+          projectType: q.projectType,
+          budget: q.budget,
+          timeline: q.timeline,
+          status: QUOTE_STATUS_MAP[q.status],
+          ...(q.reply ? { reply: q.reply } : {}),
+        },
+      },
+      { upsert: true, new: true },
+    );
+  }
+  return MOCK_QUOTES.length;
+}
+
 async function seedProfile() {
   await Profile.findByIdAndUpdate(
     "singleton",
@@ -253,6 +293,7 @@ async function main() {
   const posts = await seedBlog();
   await seedProfile();
   const endorsements = await seedEndorsements();
+  const quotes = await seedQuotes();
 
   console.log("Seed complete:");
   console.log(`  users:        ${users.join(", ")}`);
@@ -260,6 +301,7 @@ async function main() {
   console.log(`  blog:         ${posts} upserted`);
   console.log("  profile:      singleton upserted");
   console.log(`  endorsements: ${endorsements} upserted (+ endorser accounts)`);
+  console.log(`  quotes:       ${quotes} upserted (demo user)`);
 
   await mongoose.disconnect();
 }
