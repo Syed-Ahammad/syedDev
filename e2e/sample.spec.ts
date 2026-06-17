@@ -177,8 +177,10 @@ test("about page renders story, principles and CTA", async ({ page }) => {
 
   const cta = page.getByRole("link", { name: /start a conversation/i });
   await cta.scrollIntoViewIfNeeded();
-  await cta.click();
-  await expect(page).toHaveURL(/\/contact$/);
+  await Promise.all([
+    page.waitForURL(/\/contact$/, { timeout: 15000 }),
+    cta.click(),
+  ]);
 });
 
 test("admin shell renders sidebar with 7 items and marks Overview active", async ({
@@ -522,6 +524,33 @@ test("dashboard quotes form validates then accepts a submission", async ({
     .fill("Small bakery in JLT. Need pickup orders with WhatsApp confirmation.");
   await form.getByRole("button", { name: /send brief/i }).click();
   await expect(form.getByRole("status")).toContainText(/queued/i);
+});
+
+test("home reveals respect prefers-reduced-motion", async ({ page, context }) => {
+  await context.clearCookies();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  // The FAQ section is deep below the fold — under reduced motion its Reveal wrapper
+  // must hand back full opacity and zero transform before any scrolling/intersection.
+  const faqHeading = page.getByRole("heading", {
+    level: 2,
+    name: /questions i hear a lot/i,
+  });
+
+  await expect.poll(async () => {
+    return await faqHeading.evaluate((node) => {
+      let el: HTMLElement | null = node as HTMLElement;
+      while (el) {
+        if (el.hasAttribute("data-reveal")) {
+          const style = window.getComputedStyle(el);
+          return { opacity: style.opacity, transform: style.transform };
+        }
+        el = el.parentElement;
+      }
+      return null;
+    });
+  }).toEqual({ opacity: "1", transform: "none" });
 });
 
 test("dashboard profile editor validates and saves", async ({ page }) => {

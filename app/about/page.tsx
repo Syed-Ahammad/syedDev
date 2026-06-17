@@ -6,6 +6,7 @@ import { AboutJourney } from "@/components/public/AboutJourney";
 import { AboutPrinciples } from "@/components/public/AboutPrinciples";
 import { AboutStack } from "@/components/public/AboutStack";
 import { AboutCta } from "@/components/public/AboutCta";
+import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "About — Syed Ahammad",
@@ -19,10 +20,18 @@ export default function AboutPage() {
       <Navbar />
       <main className="flex flex-1 flex-col">
         <AboutHero />
-        <AboutJourney />
-        <AboutPrinciples />
-        <AboutStack />
-        <AboutCta />
+        <Reveal>
+          <AboutJourney />
+        </Reveal>
+        <Reveal>
+          <AboutPrinciples />
+        </Reveal>
+        <Reveal>
+          <AboutStack />
+        </Reveal>
+        <Reveal>
+          <AboutCta />
+        </Reveal>
       </main>
       <Footer />
     </>

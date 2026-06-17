@@ -11,6 +11,7 @@ import { Faq } from "@/components/public/Faq";
 import { Newsletter } from "@/components/public/Newsletter";
 import { ContactForm } from "@/components/public/ContactForm";
 import { Footer } from "@/components/public/Footer";
+import { Reveal } from "@/components/ui/Reveal";
 
 export default function Home() {
   return (
@@ -18,16 +19,36 @@ export default function Home() {
       <Navbar />
       <main className="flex flex-1 flex-col">
         <Hero />
-        <Highlights />
-        <StackStrip />
-        <FeaturedProjects />
-        <Services />
-        <Stats />
-        <EndorsementsWall />
-        <BlogPreview />
-        <Faq />
-        <Newsletter />
-        <ContactForm />
+        <Reveal>
+          <Highlights />
+        </Reveal>
+        <Reveal>
+          <StackStrip />
+        </Reveal>
+        <Reveal>
+          <FeaturedProjects />
+        </Reveal>
+        <Reveal>
+          <Services />
+        </Reveal>
+        <Reveal>
+          <Stats />
+        </Reveal>
+        <Reveal>
+          <EndorsementsWall />
+        </Reveal>
+        <Reveal>
+          <BlogPreview />
+        </Reveal>
+        <Reveal>
+          <Faq />
+        </Reveal>
+        <Reveal>
+          <Newsletter />
+        </Reveal>
+        <Reveal>
+          <ContactForm />
+        </Reveal>
       </main>
       <Footer />
     </>

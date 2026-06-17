@@ -4,6 +4,7 @@ import { Footer } from "@/components/public/Footer";
 import { ContactHero } from "@/components/public/ContactHero";
 import { ContactDetails } from "@/components/public/ContactDetails";
 import { ContactForm } from "@/components/public/ContactForm";
+import { Reveal } from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Contact — Syed Ahammad",
@@ -17,8 +18,12 @@ export default function ContactPage() {
       <Navbar />
       <main className="flex flex-1 flex-col">
         <ContactHero />
-        <ContactDetails />
-        <ContactForm />
+        <Reveal>
+          <ContactDetails />
+        </Reveal>
+        <Reveal>
+          <ContactForm />
+        </Reveal>
       </main>
       <Footer />
     </>

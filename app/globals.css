@@ -53,3 +53,15 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
 }
+
+/* Honor `prefers-reduced-motion: reduce` at the CSS layer so even SSR'd reveals start visible
+   (before motion/react has a chance to hydrate), and so the marquee freezes instead of looping. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+  }
+}
