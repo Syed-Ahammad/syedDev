@@ -8,6 +8,7 @@ import {
   projectUpdateSchema,
   bookmarkSchema,
   endorsementSchema,
+  endorsementModerationSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -151,6 +152,21 @@ describe("endorsementSchema", () => {
 
   it("requires a skill", () => {
     expect(endorsementSchema.safeParse({ ...valid, skill: "" }).success).toBe(false);
+  });
+});
+
+describe("endorsementModerationSchema", () => {
+  it("accepts pending, approved, and rejected", () => {
+    for (const status of ["pending", "approved", "rejected"]) {
+      expect(endorsementModerationSchema.safeParse({ status }).success).toBe(true);
+    }
+  });
+
+  it("rejects unknown statuses", () => {
+    expect(endorsementModerationSchema.safeParse({ status: "deleted" }).success).toBe(
+      false,
+    );
+    expect(endorsementModerationSchema.safeParse({}).success).toBe(false);
   });
 });
 

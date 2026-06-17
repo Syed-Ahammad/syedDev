@@ -15,6 +15,8 @@ const DATE = new Intl.DateTimeFormat("en-GB", {
 export function EndorsementModeration({ initial }: Props) {
   const [items, setItems] = useState<Endorsement[]>(initial);
   const [tab, setTab] = useState<EndorsementStatus>("pending");
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   const counts = {
     pending: items.filter((e) => e.status === "pending").length,
@@ -24,10 +26,38 @@ export function EndorsementModeration({ initial }: Props) {
 
   const visible = items.filter((e) => e.status === tab);
 
-  function update(id: string, next: EndorsementStatus) {
+  // Optimistically flip the status, persist via the API, roll back on failure.
+  async function update(id: string, next: EndorsementStatus) {
+    const current = items.find((e) => e.id === id);
+    if (!current || current.status === next || busyId) return;
+    const prevStatus = current.status;
+
+    setBusyId(id);
+    setError("");
     setItems((prev) =>
       prev.map((e) => (e.id === id ? { ...e, status: next } : e)),
     );
+
+    try {
+      const res = await fetch(`/api/admin/endorsements/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Couldn't update that endorsement.");
+      }
+    } catch (e) {
+      setItems((prev) =>
+        prev.map((it) => (it.id === id ? { ...it, status: prevStatus } : it)),
+      );
+      setError(
+        e instanceof Error ? e.message : "Couldn't update that endorsement.",
+      );
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
@@ -64,6 +94,12 @@ export function EndorsementModeration({ initial }: Props) {
           );
         })}
       </div>
+
+      {error && (
+        <p role="alert" className="text-sm text-coral">
+          {error}
+        </p>
+      )}
 
       {visible.length === 0 ? (
         <div className="rounded-2xl border border-border bg-surface p-12 text-center">
@@ -105,7 +141,8 @@ export function EndorsementModeration({ initial }: Props) {
                   <button
                     type="button"
                     onClick={() => update(endorsement.id, "approved")}
-                    className="inline-flex h-9 items-center justify-center rounded-full bg-teal px-4 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-background transition-opacity hover:opacity-90"
+                    disabled={busyId !== null}
+                    className="inline-flex h-9 items-center justify-center rounded-full bg-teal px-4 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-background transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
                     Approve
                   </button>
@@ -114,7 +151,8 @@ export function EndorsementModeration({ initial }: Props) {
                   <button
                     type="button"
                     onClick={() => update(endorsement.id, "rejected")}
-                    className="inline-flex h-9 items-center justify-center rounded-full border border-border px-4 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:border-coral hover:text-coral"
+                    disabled={busyId !== null}
+                    className="inline-flex h-9 items-center justify-center rounded-full border border-border px-4 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:border-coral hover:text-coral disabled:opacity-50"
                   >
                     Reject
                   </button>
@@ -123,7 +161,8 @@ export function EndorsementModeration({ initial }: Props) {
                   <button
                     type="button"
                     onClick={() => update(endorsement.id, "pending")}
-                    className="inline-flex h-9 items-center justify-center rounded-full border border-border px-4 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:border-coral hover:text-coral"
+                    disabled={busyId !== null}
+                    className="inline-flex h-9 items-center justify-center rounded-full border border-border px-4 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:border-coral hover:text-coral disabled:opacity-50"
                   >
                     Move to pending
                   </button>

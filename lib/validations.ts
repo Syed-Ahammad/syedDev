@@ -45,6 +45,14 @@ export const endorsementSchema = z.object({
 
 export type EndorsementInput = z.infer<typeof endorsementSchema>;
 
+export const ENDORSEMENT_STATUSES = ["pending", "approved", "rejected"] as const;
+
+export const endorsementModerationSchema = z.object({
+  status: z.enum(ENDORSEMENT_STATUSES),
+});
+
+export type EndorsementModerationInput = z.infer<typeof endorsementModerationSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

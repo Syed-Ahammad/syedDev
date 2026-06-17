@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { EndorsementModeration } from "@/components/admin/EndorsementModeration";
-import { MOCK_ENDORSEMENTS } from "@/lib/mock-endorsements";
+import { fetchAllAdminEndorsements } from "@/lib/endorsements";
 
 export const metadata: Metadata = {
   title: "Endorsements — Admin · syed.dev",
 };
 
-export default function AdminEndorsementsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminEndorsementsPage() {
+  const endorsements = await fetchAllAdminEndorsements();
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
       <header className="flex flex-col gap-3">
@@ -18,12 +22,11 @@ export default function AdminEndorsementsPage() {
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
           Approve or reject endorsements before they appear on the public site.
-          State changes are in-memory until /api/admin/endorsements is wired in
-          Phase 3.
+          Changes are saved immediately.
         </p>
       </header>
 
-      <EndorsementModeration initial={MOCK_ENDORSEMENTS} />
+      <EndorsementModeration initial={endorsements} />
     </div>
   );
 }
