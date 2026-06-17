@@ -4,6 +4,8 @@ import { Project } from "@/models/Project";
 import { Lead } from "@/models/Lead";
 import { BlogPost } from "@/models/BlogPost";
 import { Profile } from "@/models/Profile";
+import { Endorsement } from "@/models/Endorsement";
+import { Bookmark } from "@/models/Bookmark";
 
 // Defining a Mongoose model registers the schema on the default connection but
 // needs no live database, so these assertions run safely in CI.
@@ -82,6 +84,49 @@ describe("Profile model", () => {
     expect(Profile.schema.path("_id").options.default).toBe("singleton");
     expect(Profile.schema.path("skills").instance).toBe("Array");
     expect(Profile.schema.path("faq").instance).toBe("Array");
+  });
+});
+
+describe("Endorsement model", () => {
+  it("enforces status enum, default, and text length bounds", () => {
+    expect(Endorsement.schema.path("status").options.enum).toEqual([
+      "pending",
+      "approved",
+      "rejected",
+    ]);
+    expect(Endorsement.schema.path("status").options.default).toBe("pending");
+    expect(Endorsement.schema.path("text").options.minlength).toBe(20);
+    expect(Endorsement.schema.path("text").options.maxlength).toBe(500);
+    expect(Endorsement.schema.path("userId").isRequired).toBe(true);
+    expect(Endorsement.schema.path("skill").isRequired).toBe(true);
+  });
+
+  it("declares the unique (userId, skill) index", () => {
+    const unique = Endorsement.schema
+      .indexes()
+      .some(
+        (index: Record<string, unknown>[]) =>
+          index[1]?.unique === true &&
+          "userId" in index[0] &&
+          "skill" in index[0],
+      );
+    expect(unique).toBe(true);
+  });
+});
+
+describe("Bookmark model", () => {
+  it("requires userId + projectId and is unique per pair", () => {
+    expect(Bookmark.schema.path("userId").isRequired).toBe(true);
+    expect(Bookmark.schema.path("projectId").isRequired).toBe(true);
+    const unique = Bookmark.schema
+      .indexes()
+      .some(
+        (index: Record<string, unknown>[]) =>
+          index[1]?.unique === true &&
+          "userId" in index[0] &&
+          "projectId" in index[0],
+      );
+    expect(unique).toBe(true);
   });
 });
 
