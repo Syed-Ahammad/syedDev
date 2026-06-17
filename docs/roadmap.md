@@ -12,31 +12,31 @@ Each step is sized to finish in one sitting, leaves the app working, and ends wi
 ## Phase 2 — Front-end build (one section at a time)
 - [x] 2.1 Scaffold: `create-next-app` (TS + Tailwind v4 + ESLint) — runs locally
 - [x] 2.1a Set up Vitest + RTL + Playwright (one trivial passing test each); add `test`, `test:e2e` scripts
-- [ ] 2.2 Add fonts + design tokens + dark/light theme variables to Tailwind config + globals
-- [ ] 2.2a Wire `next-themes` (`ThemeProvider` in root layout + `ThemeToggle` in navbar)
-- [ ] 2.3 Public `Navbar` (logged-out variant) — sticky, ≥4 routes, dark-mode toggle
-- [ ] 2.4 Build `Hero` (60-70vh, static first, animation after — one interactive element)
-- [ ] 2.5 Build `Highlights` + `StackStrip` (marquee)
-- [ ] 2.6 Build `FeaturedProjects` + `ProjectCard` (4-per-row desktop, skeleton loader) using **mock data**
-- [ ] 2.7 Build `Services` cards
-- [ ] 2.8 Build `Stats` (animated counters)
-- [ ] 2.9 Build `EndorsementsWall` (mock data — same card grid rules)
-- [ ] 2.10 Build `BlogPreview` (3 latest mock posts)
-- [ ] 2.11 Build `Faq` accordion + `Newsletter` band
-- [ ] 2.12 Build `ContactForm` (UI only, no submit yet) + `Footer`
-- [ ] 2.13 Compose all into `app/page.tsx` (≥8 sections); responsive pass (320 → 1440)
-- [ ] 2.14 Build `/projects` listing UI (search + filter chips + sort + pagination — URL-driven, mock data)
-- [ ] 2.15 Build `/projects/[slug]` detail UI (overview / key info / endorsements / related — mock)
-- [ ] 2.16 Build `/blog` index + `/blog/[slug]` detail (mock Markdown)
-- [ ] 2.17 Build `/about` + `/contact` pages
-- [ ] 2.18 Build `/login` (credentials form + Google button + 2 demo buttons) + `/register` (UI only)
-- [ ] 2.19 Admin shell: `Sidebar` + `app/admin/layout.tsx` (no auth yet, mock session); 7 menu items
-- [ ] 2.20 User dashboard shell: `Sidebar` + `app/dashboard/layout.tsx` (mock session); 5 menu items
-- [ ] 2.21 Profile dropdown component (used in both dashboards)
-- [ ] 2.22 Admin pages with mock data: overview, projects table + `ProjectForm`, leads table, blog table + `BlogForm`, endorsement queue, users table, analytics (3 chart types with mock data)
-- [ ] 2.23 User dashboard pages with mock data: overview, bookmarks, endorsements (with submit form), quotes (with submit form), profile editor
-- [ ] 2.24 Add Framer Motion reveals + reduced-motion check
-- [ ] 2.25 Lighthouse pass (Performance / Accessibility / SEO > 90 in both themes)
+- [x] 2.2 Add fonts + design tokens + dark/light theme variables to Tailwind config + globals
+- [x] 2.2a Wire `next-themes` (`ThemeProvider` in root layout + `ThemeToggle` in navbar)
+- [x] 2.3 Public `Navbar` (logged-out variant) — sticky, ≥4 routes, dark-mode toggle
+- [x] 2.4 Build `Hero` (60-70vh, static first, animation after — one interactive element)
+- [x] 2.5 Build `Highlights` + `StackStrip` (marquee)
+- [x] 2.6 Build `FeaturedProjects` + `ProjectCard` (4-per-row desktop, skeleton loader) using **mock data**
+- [x] 2.7 Build `Services` cards
+- [x] 2.8 Build `Stats` (animated counters)
+- [x] 2.9 Build `EndorsementsWall` (mock data — same card grid rules)
+- [x] 2.10 Build `BlogPreview` (3 latest mock posts)
+- [x] 2.11 Build `Faq` accordion + `Newsletter` band
+- [x] 2.12 Build `ContactForm` (UI only, no submit yet) + `Footer`
+- [x] 2.13 Compose all into `app/page.tsx` (≥8 sections); responsive pass (320 → 1440)
+- [x] 2.14 Build `/projects` listing UI (search + filter chips + sort + pagination — URL-driven, mock data)
+- [x] 2.15 Build `/projects/[slug]` detail UI (overview / key info / endorsements / related — mock)
+- [x] 2.16 Build `/blog` index + `/blog/[slug]` detail (mock Markdown)
+- [x] 2.17 Build `/about` + `/contact` pages
+- [x] 2.18 Build `/login` (credentials form + Google button + 2 demo buttons) + `/register` (UI only)
+- [x] 2.19 Admin shell: `Sidebar` + `app/admin/layout.tsx` (no auth yet, mock session); 7 menu items
+- [x] 2.20 User dashboard shell: `Sidebar` + `app/dashboard/layout.tsx` (mock session); 5 menu items
+- [x] 2.21 Profile dropdown component (used in both dashboards)
+- [x] 2.22 Admin pages with mock data: overview, projects table + `ProjectForm`, leads table, blog table + `BlogForm`, endorsement queue, users table, analytics (3 chart types with mock data)
+- [x] 2.23 User dashboard pages with mock data: overview, bookmarks, endorsements (with submit form), quotes (with submit form), profile editor
+- [x] 2.24 Add Framer Motion reveals + reduced-motion check
+- [x] 2.25 Lighthouse pass (Performance / Accessibility / SEO > 90 in both themes)
 - [ ] 2.26 Deploy this UI version to Vercel ✦ *(already shareable!)*
 
 ## Phase 3 — Back-end (one route at a time)
