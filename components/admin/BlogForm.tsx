@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import type { AdminBlogItem } from "@/lib/blog";
 
 type Values = {
   title: string;
@@ -27,9 +29,25 @@ function validate(values: Values): FieldErrors {
   return errors;
 }
 
-export function BlogForm() {
-  const [open, setOpen] = useState(false);
-  const [values, setValues] = useState<Values>(EMPTY);
+type Props = {
+  editing?: AdminBlogItem | null;
+  onClose?: () => void;
+};
+
+export function BlogForm({ editing = null, onClose }: Props) {
+  const router = useRouter();
+  // Prefilled when editing; the manager remounts via `key` to switch records.
+  const [open, setOpen] = useState(Boolean(editing));
+  const [values, setValues] = useState<Values>(
+    editing
+      ? {
+          title: editing.title,
+          excerpt: editing.excerpt,
+          tag: editing.tag,
+          body: editing.body,
+        }
+      : EMPTY,
+  );
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [banner, setBanner] = useState("");
@@ -61,12 +79,38 @@ export function BlogForm() {
     setErrors({});
     setStatus("submitting");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setStatus("success");
-    setBanner(
-      `Draft saved for "${values.title}" — persistence lands when /api/admin/blog is wired.`,
-    );
-    setValues(EMPTY);
+    try {
+      const res = await fetch(
+        editing ? `/api/admin/blog/${editing.id}` : "/api/admin/blog",
+        {
+          method: editing ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: values.title.trim(),
+            excerpt: values.excerpt.trim(),
+            tag: values.tag,
+            body: values.body.trim(),
+          }),
+        },
+      );
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Could not save the post.");
+      }
+      if (editing) {
+        setValues(EMPTY);
+        setOpen(false);
+        onClose?.();
+      } else {
+        setStatus("success");
+        setBanner(`Saved "${values.title}" as a draft.`);
+        setValues(EMPTY);
+      }
+      router.refresh();
+    } catch (err) {
+      setStatus("error");
+      setBanner(err instanceof Error ? err.message : "Could not save the post.");
+    }
   }
 
   if (!open) {
@@ -93,7 +137,7 @@ export function BlogForm() {
     >
       <div className="flex items-center justify-between gap-4">
         <h3 className="font-display text-lg font-semibold text-foreground">
-          New post
+          {editing ? "Edit post" : "New post"}
         </h3>
         <button
           type="button"
@@ -103,6 +147,7 @@ export function BlogForm() {
             setErrors({});
             setStatus("idle");
             setBanner("");
+            onClose?.();
           }}
           className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:text-coral"
         >
@@ -166,7 +211,11 @@ export function BlogForm() {
         disabled={status === "submitting"}
         className="inline-flex h-11 self-end items-center justify-center rounded-full bg-coral px-5 font-mono text-xs uppercase tracking-[0.14em] text-background transition-colors hover:bg-coral/90 disabled:opacity-60"
       >
-        {status === "submitting" ? "Saving…" : "Save draft"}
+        {status === "submitting"
+          ? "Saving…"
+          : editing
+            ? "Save changes"
+            : "Save draft"}
       </button>
 
       <p

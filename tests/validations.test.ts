@@ -9,6 +9,8 @@ import {
   bookmarkSchema,
   endorsementSchema,
   endorsementModerationSchema,
+  blogCreateSchema,
+  blogUpdateSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -152,6 +154,44 @@ describe("endorsementSchema", () => {
 
   it("requires a skill", () => {
     expect(endorsementSchema.safeParse({ ...valid, skill: "" }).success).toBe(false);
+  });
+});
+
+describe("blogCreateSchema", () => {
+  const valid = {
+    title: "Indexes I add on day one",
+    excerpt: "The handful of MongoDB indexes that turn out to be load-bearing.",
+    tag: "Backend",
+    body: "x".repeat(80),
+  };
+
+  it("accepts a valid post", () => {
+    expect(blogCreateSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("requires a title of at least 4 characters", () => {
+    expect(blogCreateSchema.safeParse({ ...valid, title: "Hi" }).success).toBe(false);
+  });
+
+  it("requires an excerpt, a tag, and a long-enough body", () => {
+    expect(blogCreateSchema.safeParse({ ...valid, excerpt: "short" }).success).toBe(
+      false,
+    );
+    expect(blogCreateSchema.safeParse({ ...valid, tag: "" }).success).toBe(false);
+    expect(blogCreateSchema.safeParse({ ...valid, body: "too short" }).success).toBe(
+      false,
+    );
+  });
+});
+
+describe("blogUpdateSchema", () => {
+  it("allows a partial update (e.g. published only) and an empty object", () => {
+    expect(blogUpdateSchema.safeParse({ published: true }).success).toBe(true);
+    expect(blogUpdateSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("rejects a non-kebab-case slug", () => {
+    expect(blogUpdateSchema.safeParse({ slug: "Not Kebab" }).success).toBe(false);
   });
 });
 

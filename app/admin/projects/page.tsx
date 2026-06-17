@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { ProjectTable } from "@/components/admin/ProjectTable";
-import { ProjectForm } from "@/components/admin/ProjectForm";
+import { ProjectManager } from "@/components/admin/ProjectManager";
 import { fetchAdminProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
@@ -26,9 +25,7 @@ export default async function AdminProjectsPage() {
         </p>
       </header>
 
-      <ProjectForm />
-
-      <ProjectTable projects={items} />
+      <ProjectManager projects={items} />
     </div>
   );
 }

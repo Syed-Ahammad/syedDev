@@ -3,7 +3,7 @@ import { Navbar } from "@/components/public/Navbar";
 import { Footer } from "@/components/public/Footer";
 import { BlogCard } from "@/components/public/BlogCard";
 import { BlogTagFilters } from "@/components/public/BlogTagFilters";
-import { MOCK_BLOG_POSTS } from "@/lib/mock-blog";
+import { getPublishedPosts, getPublishedTags } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Blog — Syed Ahammad",
@@ -19,15 +19,10 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
   const raw = await searchParams;
   const activeTag = (raw.tag ?? "").trim();
 
-  const tags = Array.from(new Set(MOCK_BLOG_POSTS.map((p) => p.tag))).sort();
-
-  const filtered = MOCK_BLOG_POSTS.filter(
-    (p) => activeTag === "" || p.tag === activeTag,
-  );
-
-  const sorted = [...filtered].sort((a, b) =>
-    b.publishedAt.localeCompare(a.publishedAt),
-  );
+  const [sorted, tags] = await Promise.all([
+    getPublishedPosts(activeTag || undefined),
+    getPublishedTags(),
+  ]);
 
   return (
     <>

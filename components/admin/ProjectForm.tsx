@@ -2,6 +2,7 @@
 
 import { useId, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import type { AdminProjectItem } from "@/lib/projects";
 
 function slugify(value: string): string {
   return value
@@ -51,10 +52,26 @@ function validate(values: Values): FieldErrors {
   return errors;
 }
 
-export function ProjectForm() {
+type Props = {
+  editing?: AdminProjectItem | null;
+  onClose?: () => void;
+};
+
+export function ProjectForm({ editing = null, onClose }: Props) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [values, setValues] = useState<Values>(EMPTY);
+  // Prefilled when editing; the manager remounts via `key` to switch records.
+  const [open, setOpen] = useState(Boolean(editing));
+  const [values, setValues] = useState<Values>(
+    editing
+      ? {
+          name: editing.name,
+          tagline: editing.tagline,
+          type: editing.type,
+          stack: editing.stack.join(", "),
+          status: editing.status,
+        }
+      : EMPTY,
+  );
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [banner, setBanner] = useState("");
@@ -68,6 +85,9 @@ export function ProjectForm() {
   const statusFieldId = useId();
   const imageId = useId();
   const statusBannerId = useId();
+
+  // The cover image isn't part of the admin list payload, so on edit it's only
+  // sent when a new one is uploaded here; otherwise the existing image stays.
 
   async function onImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -123,7 +143,8 @@ export function ProjectForm() {
     try {
       const payload = {
         name: values.name.trim(),
-        slug: slugify(values.name),
+        // Slug is the project's identity/URL — set on create, left alone on edit.
+        ...(editing ? {} : { slug: slugify(values.name) }),
         tagline: values.tagline.trim(),
         type: values.type,
         stack: values.stack
@@ -133,17 +154,21 @@ export function ProjectForm() {
         status: values.status,
         ...(imageUrl ? { image: imageUrl } : {}),
       };
-      const res = await fetch("/api/admin/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        editing ? `/api/admin/projects/${editing.id}` : "/api/admin/projects",
+        {
+          method: editing ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
       const json = await res.json().catch(() => null);
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Could not save the project.");
       }
       reset();
       setOpen(false);
+      onClose?.();
       router.refresh();
     } catch (err) {
       setStatus("error");
@@ -175,13 +200,14 @@ export function ProjectForm() {
     >
       <div className="flex items-center justify-between gap-4">
         <h3 className="font-display text-lg font-semibold text-foreground">
-          New project
+          {editing ? "Edit project" : "New project"}
         </h3>
         <button
           type="button"
           onClick={() => {
             setOpen(false);
             reset();
+            onClose?.();
           }}
           className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted transition-colors hover:text-coral"
         >
@@ -280,7 +306,11 @@ export function ProjectForm() {
         disabled={status === "submitting" || uploading}
         className="inline-flex h-11 self-end items-center justify-center rounded-full bg-coral px-5 font-mono text-xs uppercase tracking-[0.14em] text-background transition-colors hover:bg-coral/90 disabled:opacity-60"
       >
-        {status === "submitting" ? "Saving…" : "Save project"}
+        {status === "submitting"
+          ? "Saving…"
+          : editing
+            ? "Save changes"
+            : "Save project"}
       </button>
 
       <p

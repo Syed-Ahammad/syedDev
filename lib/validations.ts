@@ -97,6 +97,34 @@ export const projectUpdateSchema = z.object(projectFields).partial();
 export type ProjectCreateInput = z.infer<typeof projectCreateSchema>;
 export type ProjectUpdateInput = z.infer<typeof projectUpdateSchema>;
 
+// Mirrors the BlogForm's client rules so the contract lives in one place.
+export const blogCreateSchema = z.object({
+  title: z.string().trim().min(4, "Title is too short."),
+  excerpt: z.string().trim().min(30, "Excerpt should be at least 30 characters."),
+  tag: z.string().trim().min(1, "Pick a tag."),
+  body: z.string().trim().min(80, "Body should be at least 80 characters."),
+  coverImage: z.string().trim().optional(),
+  published: z.boolean().optional(),
+});
+
+export const blogUpdateSchema = z
+  .object({
+    title: z.string().trim().min(4, "Title is too short."),
+    excerpt: z.string().trim().min(30, "Excerpt should be at least 30 characters."),
+    tag: z.string().trim().min(1, "Pick a tag."),
+    body: z.string().trim().min(80, "Body should be at least 80 characters."),
+    coverImage: z.string().trim(),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be kebab-case."),
+    published: z.boolean(),
+  })
+  .partial();
+
+export type BlogCreateInput = z.infer<typeof blogCreateSchema>;
+export type BlogUpdateInput = z.infer<typeof blogUpdateSchema>;
+
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name."),
   email: z.string().trim().pipe(z.email("Enter a valid email.")),

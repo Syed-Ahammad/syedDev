@@ -4,20 +4,26 @@ import { Navbar } from "@/components/public/Navbar";
 import { Footer } from "@/components/public/Footer";
 import { BlogPostHeader } from "@/components/public/BlogPostHeader";
 import { RelatedPosts } from "@/components/public/RelatedPosts";
-import { MOCK_BLOG_POSTS } from "@/lib/mock-blog";
+import { getPublishedPost, getRelatedPosts, getPublishedBlogSlugs } from "@/lib/blog";
 import { renderMarkdown } from "@/lib/markdown";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return MOCK_BLOG_POSTS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  try {
+    const slugs = await getPublishedBlogSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    // No DB at build time → render slugs on demand instead of failing the build.
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = MOCK_BLOG_POSTS.find((p) => p.slug === slug);
+  const post = await getPublishedPost(slug);
   if (!post) return { title: "Post not found" };
   return {
     title: `${post.title} — Syed Ahammad`,
@@ -27,12 +33,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = MOCK_BLOG_POSTS.find((p) => p.slug === slug);
+  const post = await getPublishedPost(slug);
   if (!post) notFound();
 
-  const related = MOCK_BLOG_POSTS.filter(
-    (p) => p.slug !== post.slug && p.tag === post.tag,
-  ).slice(0, 3);
+  const related = await getRelatedPosts(post.slug, post.tag);
 
   return (
     <>
