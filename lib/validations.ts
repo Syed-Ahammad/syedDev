@@ -33,6 +33,18 @@ export const bookmarkSchema = z.object({
 
 export type BookmarkInput = z.infer<typeof bookmarkSchema>;
 
+export const endorsementSchema = z.object({
+  skill: z.string().trim().min(1, "Pick a skill."),
+  text: z
+    .string()
+    .trim()
+    .min(20, "Tell me a bit more — at least 20 characters.")
+    .max(500, "Keep it under 500 characters."),
+  projectId: z.string().optional(),
+});
+
+export type EndorsementInput = z.infer<typeof endorsementSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

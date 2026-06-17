@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
 import { EndorsementForm } from "@/components/dashboard/EndorsementForm";
 import { EndorsementList } from "@/components/dashboard/EndorsementList";
-import { MOCK_PROJECTS } from "@/lib/mock-projects";
-import { MOCK_USER_ENDORSEMENTS } from "@/lib/mock-user-endorsements";
+import { auth } from "@/lib/auth";
+import {
+  getProfileSkills,
+  getEndorsableProjects,
+  fetchUserEndorsements,
+} from "@/lib/endorsements";
 
 export const metadata: Metadata = {
   title: "Endorsements — syed.dev",
 };
 
-export default function DashboardEndorsementsPage() {
-  const projects = MOCK_PROJECTS.filter((p) => p.status !== "draft").map(
-    (p) => ({ slug: p.slug, name: p.name }),
-  );
-  const endorsements = [...MOCK_USER_ENDORSEMENTS].sort((a, b) =>
-    b.submittedAt.localeCompare(a.submittedAt),
-  );
+export const dynamic = "force-dynamic";
+
+export default async function DashboardEndorsementsPage() {
+  const session = await auth();
+  const [skills, projects, endorsements] = await Promise.all([
+    getProfileSkills(),
+    getEndorsableProjects(),
+    session?.user ? fetchUserEndorsements(session.user.id) : Promise.resolve([]),
+  ]);
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
@@ -31,7 +37,7 @@ export default function DashboardEndorsementsPage() {
         </p>
       </header>
 
-      <EndorsementForm projects={projects} />
+      <EndorsementForm projects={projects} skills={skills} />
 
       <section aria-label="Your endorsements" className="flex flex-col gap-4">
         <h2 className="font-display text-xl font-semibold text-foreground">

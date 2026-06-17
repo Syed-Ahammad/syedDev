@@ -42,6 +42,7 @@ export function LoginForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [banner, setBanner] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   function set<K extends keyof Values>(key: K, value: Values[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -57,20 +58,25 @@ export function LoginForm() {
   async function doSignIn(email: string, password: string) {
     setStatus("submitting");
     setBanner("");
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    if (!result || result.error) {
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      if (!result || result.error) {
+        setStatus("error");
+        setBanner("Wrong email or password.");
+        return;
+      }
+      // Send admins to the admin panel, everyone else to their dashboard.
+      const session = await getSession();
+      router.push(session?.user?.role === "admin" ? "/admin" : "/dashboard");
+      router.refresh();
+    } catch {
       setStatus("error");
-      setBanner("Wrong email or password.");
-      return;
+      setBanner("Couldn't reach the sign-in service. Please try again.");
     }
-    // Send admins to the admin panel, everyone else to their dashboard.
-    const session = await getSession();
-    router.push(session?.user?.role === "admin" ? "/admin" : "/dashboard");
-    router.refresh();
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -160,19 +166,31 @@ export function LoginForm() {
         label="Password"
         error={errors.password}
         input={
-          <input
-            id={passwordId}
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={values.password}
-            onChange={(e) => set("password", e.target.value)}
-            disabled={submitting}
-            aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? `${passwordId}-err` : undefined}
-            className={fieldClass}
-          />
+          <div className="relative">
+            <input
+              id={passwordId}
+              name="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              value={values.password}
+              onChange={(e) => set("password", e.target.value)}
+              disabled={submitting}
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? `${passwordId}-err` : undefined}
+              className={`${fieldClass} pr-12`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              disabled={submitting}
+              aria-pressed={showPassword}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute inset-y-0 right-0 flex items-center px-3.5 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:text-coral disabled:opacity-60"
+            >
+              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            </button>
+          </div>
         }
       />
 
@@ -236,6 +254,46 @@ function Divider({ label }: { label: string }) {
       </span>
       <span className="h-px flex-1 bg-border" />
     </div>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function EyeOffIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9.9 4.24A9.1 9.1 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68" />
+      <path d="M6.06 6.06C3.5 7.6 2 12 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.94-1.06" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="M2 2l20 20" />
+    </svg>
   );
 }
 

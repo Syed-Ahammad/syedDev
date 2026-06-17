@@ -7,6 +7,7 @@ import {
   projectCreateSchema,
   projectUpdateSchema,
   bookmarkSchema,
+  endorsementSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -126,6 +127,30 @@ describe("projectUpdateSchema", () => {
   it("allows a partial update (e.g. status only)", () => {
     expect(projectUpdateSchema.safeParse({ status: "live" }).success).toBe(true);
     expect(projectUpdateSchema.safeParse({}).success).toBe(true);
+  });
+});
+
+describe("endorsementSchema", () => {
+  const valid = { skill: "Next.js", text: "Used it on three shipped projects and it held up." };
+
+  it("accepts a valid endorsement (project optional)", () => {
+    expect(endorsementSchema.safeParse(valid).success).toBe(true);
+    expect(
+      endorsementSchema.safeParse({ ...valid, projectId: "abc" }).success,
+    ).toBe(true);
+  });
+
+  it("rejects text shorter than 20 or longer than 500 characters", () => {
+    expect(endorsementSchema.safeParse({ ...valid, text: "too short" }).success).toBe(
+      false,
+    );
+    expect(
+      endorsementSchema.safeParse({ ...valid, text: "x".repeat(501) }).success,
+    ).toBe(false);
+  });
+
+  it("requires a skill", () => {
+    expect(endorsementSchema.safeParse({ ...valid, skill: "" }).success).toBe(false);
   });
 });
 

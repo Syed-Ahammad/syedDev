@@ -1,13 +1,15 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
-  projects: { slug: string; name: string }[];
+  projects: { id: string; slug: string; name: string }[];
+  skills: string[];
 };
 
 type Values = {
-  projectSlug: string;
+  projectId: string;
   skill: string;
   text: string;
 };
@@ -15,25 +17,25 @@ type Values = {
 type FieldErrors = Partial<Record<keyof Values, string>>;
 type Status = "idle" | "submitting" | "success" | "error";
 
-const EMPTY: Values = { projectSlug: "", skill: "", text: "" };
+const EMPTY: Values = { projectId: "", skill: "", text: "" };
 
 function validate(values: Values): FieldErrors {
   const errors: FieldErrors = {};
-  if (!values.projectSlug) errors.projectSlug = "Pick a project.";
-  if (values.skill.trim().length < 2)
-    errors.skill = "Skill needs at least 2 characters.";
-  if (values.text.trim().length < 40)
-    errors.text = "Tell me a bit more — at least 40 characters.";
+  if (!values.projectId) errors.projectId = "Pick a project.";
+  if (!values.skill) errors.skill = "Pick a skill.";
+  if (values.text.trim().length < 20)
+    errors.text = "Tell me a bit more — at least 20 characters.";
   return errors;
 }
 
-export function EndorsementForm({ projects }: Props) {
+export function EndorsementForm({ projects, skills }: Props) {
+  const router = useRouter();
   const [values, setValues] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [banner, setBanner] = useState("");
 
-  const projectId = useId();
+  const projectFieldId = useId();
   const skillId = useId();
   const textId = useId();
   const bannerId = useId();
@@ -59,12 +61,30 @@ export function EndorsementForm({ projects }: Props) {
     setErrors({});
     setStatus("submitting");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setStatus("success");
-    setBanner(
-      "Thanks — your endorsement is queued for review. It'll show up on the project once approved.",
-    );
-    setValues(EMPTY);
+    try {
+      const res = await fetch("/api/user/endorsements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          skill: values.skill,
+          text: values.text.trim(),
+          projectId: values.projectId,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Could not submit your endorsement.");
+      }
+      setStatus("success");
+      setBanner("Thanks — your endorsement is queued for review.");
+      setValues(EMPTY);
+      router.refresh();
+    } catch (err) {
+      setStatus("error");
+      setBanner(
+        err instanceof Error ? err.message : "Could not submit your endorsement.",
+      );
+    }
   }
 
   return (
@@ -80,17 +100,17 @@ export function EndorsementForm({ projects }: Props) {
       </h2>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Field id={projectId} label="Project" error={errors.projectSlug}>
+        <Field id={projectFieldId} label="Project" error={errors.projectId}>
           <select
-            id={projectId}
-            value={values.projectSlug}
-            onChange={(e) => set("projectSlug", e.target.value)}
+            id={projectFieldId}
+            value={values.projectId}
+            onChange={(e) => set("projectId", e.target.value)}
             className={fieldClass}
-            aria-invalid={!!errors.projectSlug}
+            aria-invalid={!!errors.projectId}
           >
             <option value="">Pick a project…</option>
             {projects.map((p) => (
-              <option key={p.slug} value={p.slug}>
+              <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}
@@ -98,14 +118,20 @@ export function EndorsementForm({ projects }: Props) {
         </Field>
 
         <Field id={skillId} label="Skill" error={errors.skill}>
-          <input
+          <select
             id={skillId}
             value={values.skill}
             onChange={(e) => set("skill", e.target.value)}
-            placeholder="e.g. Kitchen workflow"
             className={fieldClass}
             aria-invalid={!!errors.skill}
-          />
+          >
+            <option value="">Pick a skill…</option>
+            {skills.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
         </Field>
       </div>
 
@@ -113,6 +139,7 @@ export function EndorsementForm({ projects }: Props) {
         <textarea
           id={textId}
           rows={5}
+          maxLength={500}
           value={values.text}
           onChange={(e) => set("text", e.target.value)}
           placeholder="Share what worked for you — keep it specific."
