@@ -3,6 +3,12 @@ import { Schema, model, models, type Model } from "mongoose";
 export type UserRole = "user" | "admin";
 export type AuthProvider = "credentials" | "google";
 
+export interface IUserNotifications {
+  newsletter: boolean;
+  endorsementUpdates: boolean;
+  quoteReplies: boolean;
+}
+
 export interface IUser {
   name: string;
   email: string;
@@ -13,6 +19,7 @@ export interface IUser {
   provider: AuthProvider;
   providerAccountId?: string;
   suspended: boolean;
+  notifications?: IUserNotifications;
   lastLoginAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -33,6 +40,11 @@ const UserSchema = new Schema<IUser>(
     },
     providerAccountId: String,
     suspended: { type: Boolean, default: false },
+    notifications: {
+      newsletter: { type: Boolean, default: true },
+      endorsementUpdates: { type: Boolean, default: true },
+      quoteReplies: { type: Boolean, default: true },
+    },
     lastLoginAt: Date,
   },
   { timestamps: true },

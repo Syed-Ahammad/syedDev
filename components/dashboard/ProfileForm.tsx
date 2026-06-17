@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, type ChangeEvent, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import type { UserProfile } from "@/types";
 
 type Props = {
@@ -43,10 +44,12 @@ function validate(values: Values): FieldErrors {
 }
 
 export function ProfileForm({ initial }: Props) {
+  const router = useRouter();
   const [values, setValues] = useState<Values>(toValues(initial));
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [banner, setBanner] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const nameId = useId();
   const emailId = useId();
@@ -76,9 +79,55 @@ export function ProfileForm({ initial }: Props) {
     setErrors({});
     setStatus("submitting");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setStatus("success");
-    setBanner("Profile saved — persistence lands when /api/user/profile is wired.");
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.name.trim(),
+          bio: values.bio.trim(),
+          image: values.avatarUrl.trim(),
+          notifications: {
+            newsletter: values.newsletter,
+            endorsementUpdates: values.endorsementUpdates,
+            quoteReplies: values.quoteReplies,
+          },
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Could not save your profile.");
+      }
+      setStatus("success");
+      setBanner("Profile saved.");
+      router.refresh();
+    } catch (err) {
+      setStatus("error");
+      setBanner(err instanceof Error ? err.message : "Could not save your profile.");
+    }
+  }
+
+  async function onAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setStatus("idle");
+    setBanner("");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/user/avatar", { method: "POST", body });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.error ?? "Upload failed.");
+      }
+      setField("avatarUrl", json.data.url);
+    } catch (err) {
+      setStatus("error");
+      setBanner(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   return (
@@ -111,16 +160,33 @@ export function ProfileForm({ initial }: Props) {
         </Field>
       </div>
 
-      <Field id={avatarId} label="Avatar URL" error={errors.avatarUrl}>
+      <Field id={avatarId} label="Avatar" error={errors.avatarUrl}>
         <input
           id={avatarId}
           value={values.avatarUrl}
           onChange={(e) => setField("avatarUrl", e.target.value)}
-          placeholder="https://…"
+          placeholder="https://… or upload below"
           className={fieldClass}
           aria-invalid={!!errors.avatarUrl}
           inputMode="url"
         />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={onAvatarChange}
+          disabled={uploading || status === "submitting"}
+          aria-label="Upload an avatar image"
+          className={fieldClass}
+        />
+        {uploading && <p className="text-xs text-muted">Uploading…</p>}
+        {values.avatarUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={values.avatarUrl}
+            alt="Avatar preview"
+            className="mt-1 h-16 w-16 rounded-full border border-border object-cover"
+          />
+        )}
       </Field>
 
       <Field id={bioId} label="Bio" error={errors.bio}>
@@ -163,7 +229,7 @@ export function ProfileForm({ initial }: Props) {
 
       <button
         type="submit"
-        disabled={status === "submitting"}
+        disabled={status === "submitting" || uploading}
         className="inline-flex h-11 self-end items-center justify-center rounded-full bg-coral px-5 font-mono text-xs uppercase tracking-[0.14em] text-background transition-colors hover:bg-coral/90 disabled:opacity-60"
       >
         {status === "submitting" ? "Saving…" : "Save changes"}

@@ -65,6 +65,22 @@ export const quoteRequestSchema = z.object({
 
 export type QuoteRequestInput = z.infer<typeof quoteRequestSchema>;
 
+// Mirrors the ProfileForm. All fields optional so a PATCH can send a subset.
+export const profileUpdateSchema = z
+  .object({
+    name: z.string().trim().min(2, "Name is too short."),
+    bio: z.string().trim().max(280, "Bio should be 280 characters or fewer."),
+    image: z.string().trim(),
+    notifications: z.object({
+      newsletter: z.boolean(),
+      endorsementUpdates: z.boolean(),
+      quoteReplies: z.boolean(),
+    }),
+  })
+  .partial();
+
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

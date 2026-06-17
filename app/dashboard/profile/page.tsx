@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { ProfileForm } from "@/components/dashboard/ProfileForm";
-import { MOCK_USER_PROFILE } from "@/lib/mock-user-profile";
+import { auth } from "@/lib/auth";
+import { getUserProfile } from "@/lib/user-profile";
 
 export const metadata: Metadata = {
   title: "Profile — syed.dev",
 };
 
-export default function DashboardProfilePage() {
+export const dynamic = "force-dynamic";
+
+export default async function DashboardProfilePage() {
+  const session = await auth();
+  const profile = session?.user ? await getUserProfile(session.user.id) : null;
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <header className="flex flex-col gap-3">
@@ -18,11 +24,16 @@ export default function DashboardProfilePage() {
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
           Update the basics and choose which notifications you actually want.
-          Avatar upload lands in Phase 3 with Vercel Blob.
         </p>
       </header>
 
-      <ProfileForm initial={MOCK_USER_PROFILE} />
+      {profile ? (
+        <ProfileForm initial={profile} />
+      ) : (
+        <p className="rounded-2xl border border-dashed border-border bg-surface p-6 text-sm text-muted">
+          We couldn&apos;t load your profile. Try signing out and back in.
+        </p>
+      )}
     </div>
   );
 }

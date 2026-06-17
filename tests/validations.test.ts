@@ -12,6 +12,7 @@ import {
   blogCreateSchema,
   blogUpdateSchema,
   quoteRequestSchema,
+  profileUpdateSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -234,6 +235,29 @@ describe("quoteRequestSchema", () => {
     expect(quoteRequestSchema.safeParse({ ...valid, brief: "too short" }).success).toBe(
       false,
     );
+  });
+});
+
+describe("profileUpdateSchema", () => {
+  it("allows partial updates (name only, notifications only, empty)", () => {
+    expect(profileUpdateSchema.safeParse({ name: "Aisha" }).success).toBe(true);
+    expect(
+      profileUpdateSchema.safeParse({
+        notifications: {
+          newsletter: false,
+          endorsementUpdates: true,
+          quoteReplies: false,
+        },
+      }).success,
+    ).toBe(true);
+    expect(profileUpdateSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("rejects a too-short name and an over-long bio", () => {
+    expect(profileUpdateSchema.safeParse({ name: "A" }).success).toBe(false);
+    expect(
+      profileUpdateSchema.safeParse({ bio: "x".repeat(281) }).success,
+    ).toBe(false);
   });
 });
 
