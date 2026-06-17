@@ -24,9 +24,9 @@ Next.js App Router Route Handlers (`app/api/.../route.ts`). JSON responses, conv
 | `q` | — | Full-text search on name/tagline/description |
 | `stack` | — | Comma-separated, e.g. `Next.js,MongoDB` (matches any) |
 | `type` | — | e.g. `SaaS` |
-| `sort` | `recent` | `recent` \| `endorsed` (uses `endorsementCount`) |
+| `sort` | `recent` | `recent` \| `endorsed` \| `alpha` \| `status` (`endorsed` uses `endorsementCount`; `status` = live → in-progress → draft) |
 | `page` | `1` | |
-| `limit` | `12` | Max 24 |
+| `limit` | `8` | Max 24 |
 
 Response: `{ data: { items: Project[], total: number, page: number, totalPages: number } }`.
 

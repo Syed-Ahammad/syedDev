@@ -4,8 +4,7 @@ import { Footer } from "@/components/public/Footer";
 import { ProjectCard } from "@/components/public/ProjectCard";
 import { ProjectsFilters } from "@/components/public/ProjectsFilters";
 import { Pagination } from "@/components/public/Pagination";
-import { MOCK_PROJECTS } from "@/lib/mock-projects";
-import type { ProjectStatus } from "@/types";
+import { fetchProjects, getProjectTypes, parseProjectParams } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Projects — Syed Ahammad",
@@ -13,60 +12,33 @@ export const metadata: Metadata = {
     "Everything I've built so far — products shipped, projects in progress, and ideas being sketched.",
 };
 
-const PAGE_SIZE = 8;
-
 const SORTS = [
   { key: "recent", label: "Most recent" },
+  { key: "endorsed", label: "Most endorsed" },
   { key: "alpha", label: "A → Z" },
   { key: "status", label: "Live first" },
 ] as const;
-type SortKey = (typeof SORTS)[number]["key"];
-
-const STATUS_ORDER: Record<ProjectStatus, number> = {
-  live: 0,
-  "in-progress": 1,
-  draft: 2,
-};
 
 type PageProps = {
-  searchParams: Promise<{
-    q?: string;
-    type?: string;
-    sort?: string;
-    page?: string;
-  }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function ProjectsPage({ searchParams }: PageProps) {
   const raw = await searchParams;
-  const q = (raw.q ?? "").trim();
-  const type = raw.type ?? "";
-  const sort: SortKey = SORTS.some((s) => s.key === raw.sort)
-    ? (raw.sort as SortKey)
-    : "recent";
-  const page = Math.max(1, Number.parseInt(raw.page ?? "1", 10) || 1);
+  const sp = new URLSearchParams();
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof value === "string") sp.set(key, value);
+  }
+  const params = parseProjectParams(sp);
 
-  const types = Array.from(new Set(MOCK_PROJECTS.map((p) => p.type))).sort();
-  const qLower = q.toLowerCase();
-  const filtered = MOCK_PROJECTS.filter((p) => {
-    const matchQ =
-      qLower === "" ||
-      p.name.toLowerCase().includes(qLower) ||
-      p.tagline.toLowerCase().includes(qLower);
-    const matchType = type === "" || p.type === type;
-    return matchQ && matchType;
-  });
+  const [{ items, total, page, totalPages }, types] = await Promise.all([
+    fetchProjects(params),
+    getProjectTypes(),
+  ]);
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (sort === "alpha") return a.name.localeCompare(b.name);
-    if (sort === "status") return STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
-    return a.order - b.order;
-  });
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const offset = (safePage - 1) * PAGE_SIZE;
-  const items = sorted.slice(offset, offset + PAGE_SIZE);
+  const offset = (page - 1) * params.limit;
+  const { q, type, sort } = params;
+  const stack = params.stack.join(",");
 
   return (
     <>
@@ -98,8 +70,8 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
             className="mt-6 font-mono text-xs uppercase tracking-[0.14em] text-muted"
             aria-live="polite"
           >
-            Showing {items.length} of {sorted.length}
-            {sorted.length === 1 ? " project" : " projects"}
+            Showing {items.length} of {total}
+            {total === 1 ? " project" : " projects"}
           </p>
 
           {items.length === 0 ? (
@@ -115,10 +87,10 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
           )}
 
           <Pagination
-            page={safePage}
+            page={page}
             totalPages={totalPages}
             basePath="/projects"
-            searchParams={{ q, type, sort }}
+            searchParams={{ q, type, sort, stack: stack || undefined }}
           />
         </div>
       </main>
