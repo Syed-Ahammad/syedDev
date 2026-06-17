@@ -1,9 +1,11 @@
+import { getProfile } from "@/lib/profile";
+
 type Item = {
   question: string;
   answer: string;
 };
 
-const ITEMS: Item[] = [
+const FALLBACK_ITEMS: Item[] = [
   {
     question: "What's a typical project timeline?",
     answer:
@@ -36,7 +38,13 @@ const ITEMS: Item[] = [
   },
 ];
 
-export function Faq() {
+export async function Faq() {
+  const { faq } = await getProfile();
+  const items: Item[] =
+    faq.length > 0
+      ? faq.map((f) => ({ question: f.q, answer: f.a }))
+      : FALLBACK_ITEMS;
+
   return (
     <section
       aria-labelledby="faq-heading"
@@ -55,7 +63,7 @@ export function Faq() {
       </div>
 
       <div className="mx-auto max-w-3xl divide-y divide-border rounded-2xl border border-border bg-surface">
-        {ITEMS.map((item) => (
+        {items.map((item) => (
           <details key={item.question} className="group p-6">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-semibold text-foreground transition-colors marker:hidden hover:text-coral [&::-webkit-details-marker]:hidden">
               <span>{item.question}</span>

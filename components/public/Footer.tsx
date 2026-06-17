@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getProfile } from "@/lib/profile";
 
 const SITE_LINKS = [
   { href: "/", label: "Home" },
@@ -7,15 +8,23 @@ const SITE_LINKS = [
   { href: "/about", label: "About" },
 ];
 
-const CONNECT_LINKS = [
+const FALLBACK_CONNECT = [
   { href: "https://github.com/", label: "GitHub" },
   { href: "https://www.linkedin.com/", label: "LinkedIn" },
   { href: "https://www.upwork.com/", label: "Upwork" },
-  { href: "mailto:hello@syed.dev", label: "Email" },
 ];
 
-export function Footer() {
+const FALLBACK_BLURB =
+  "Full-stack developer in Dubai. Building fast, reliable web apps with Next.js and MongoDB — and a public build journal alongside every project.";
+
+export async function Footer() {
   const year = new Date().getFullYear();
+  const profile = await getProfile();
+  const connectLinks =
+    profile.socials.length > 0
+      ? profile.socials.map((s) => ({ href: s.url, label: s.label }))
+      : FALLBACK_CONNECT;
+  const blurb = profile.subline || FALLBACK_BLURB;
 
   return (
     <footer className="border-t border-border bg-background px-6 py-16 md:px-12">
@@ -28,8 +37,7 @@ export function Footer() {
             syed<span className="text-coral">.</span>dev
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
-            Full-stack developer in Dubai. Building fast, reliable web apps with Next.js
-            and MongoDB — and a public build journal alongside every project.
+            {blurb}
           </p>
         </div>
 
@@ -52,7 +60,7 @@ export function Footer() {
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-teal">
             / connect
           </p>
-          {CONNECT_LINKS.map((link) => (
+          {connectLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}

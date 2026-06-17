@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { dbConnect } from "@/lib/db";
 import { Profile, type IProfile } from "@/models/Profile";
 import type { AdminProfile } from "@/types";
@@ -17,11 +18,13 @@ function mapProfile(doc: Partial<IProfile> | null): AdminProfile {
   };
 }
 
-export async function getProfile(): Promise<AdminProfile> {
+// Cached per render so multiple public components can read the singleton
+// without each firing its own query.
+export const getProfile = cache(async (): Promise<AdminProfile> => {
   await dbConnect();
   const doc = await Profile.findById("singleton").lean();
   return mapProfile(doc);
-}
+});
 
 export async function updateProfile(
   input: AdminProfileInput,

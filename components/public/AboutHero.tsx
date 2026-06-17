@@ -1,4 +1,21 @@
-export function AboutHero() {
+import { getProfile } from "@/lib/profile";
+
+const FALLBACK_ABOUT = [
+  "I'm Syed — a full-stack developer based in Dubai. Before code I spent five years on the floor of hospitality and retail operations, which is why my software tends to be opinionated about workflows: I've felt the friction of bad tools at the till, and I'd rather build the version that disappears into the day.",
+];
+
+const FALLBACK_FACTS = [
+  { label: "Based in", value: "Dubai, UAE" },
+  { label: "Working", value: "GMT+4 · async friendly" },
+  { label: "Stack", value: "Next.js · MongoDB · TS" },
+  { label: "Available", value: "From Q3 2026" },
+];
+
+export async function AboutHero() {
+  const profile = await getProfile();
+  const about = profile.about.length > 0 ? profile.about : FALLBACK_ABOUT;
+  const facts = profile.facts.length > 0 ? profile.facts : FALLBACK_FACTS;
+
   return (
     <section
       aria-labelledby="about-hero-heading"
@@ -15,19 +32,21 @@ export function AboutHero() {
           I write code that fits how the{" "}
           <span className="text-coral">business actually runs.</span>
         </h1>
-        <p className="max-w-[60ch] text-base leading-relaxed text-muted md:text-lg">
-          I&apos;m Syed — a full-stack developer based in Dubai. Before code I spent
-          five years on the floor of hospitality and retail operations, which is
-          why my software tends to be opinionated about workflows: I&apos;ve felt the
-          friction of bad tools at the till, and I&apos;d rather build the version
-          that disappears into the day.
-        </p>
+        <div className="flex max-w-[60ch] flex-col gap-4">
+          {about.map((paragraph, i) => (
+            <p
+              key={i}
+              className="text-base leading-relaxed text-muted md:text-lg"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
         <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 md:grid-cols-4 md:gap-x-10">
-          <Meta label="Based in" value="Dubai, UAE" />
-          <Meta label="Working" value="GMT+4 · async friendly" />
-          <Meta label="Stack" value="Next.js · MongoDB · TS" />
-          <Meta label="Available" value="From Q3 2026" />
+          {facts.map((fact) => (
+            <Meta key={fact.label} label={fact.label} value={fact.value} />
+          ))}
         </dl>
       </div>
     </section>

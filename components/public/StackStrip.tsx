@@ -1,4 +1,6 @@
-const STACK = [
+import { getProfile } from "@/lib/profile";
+
+const FALLBACK_STACK = [
   "Next.js",
   "React",
   "Node.js",
@@ -11,27 +13,36 @@ const STACK = [
   "REST APIs",
 ];
 
-export function StackStrip() {
+export async function StackStrip() {
+  const { skills } = await getProfile();
+  const stack = skills.length > 0 ? skills : FALLBACK_STACK;
+
   return (
     <section
       aria-label="Tech stack"
       className="overflow-hidden border-b border-border py-6"
     >
       <div className="flex w-max gap-3 motion-safe:animate-[var(--animate-marquee)] motion-reduce:[animation:none]">
-        <StackList />
-        <StackList ariaHidden />
+        <StackList stack={stack} />
+        <StackList stack={stack} ariaHidden />
       </div>
     </section>
   );
 }
 
-function StackList({ ariaHidden = false }: { ariaHidden?: boolean }) {
+function StackList({
+  stack,
+  ariaHidden = false,
+}: {
+  stack: string[];
+  ariaHidden?: boolean;
+}) {
   return (
     <ul
       aria-hidden={ariaHidden || undefined}
       className="flex shrink-0 gap-3 pr-3 font-mono text-xs text-muted"
     >
-      {STACK.map((tech) => (
+      {stack.map((tech) => (
         <li
           key={tech}
           className="whitespace-nowrap rounded-full border border-border px-4 py-2"
