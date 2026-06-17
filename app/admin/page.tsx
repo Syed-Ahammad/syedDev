@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StatCard } from "@/components/admin/StatCard";
-import { ADMIN_STATS } from "@/lib/mock-analytics";
-import { MOCK_LEADS } from "@/lib/mock-leads";
+import { getAdminStats } from "@/lib/stats";
+import { fetchLeads } from "@/lib/leads";
 
 export const metadata: Metadata = {
   title: "Admin overview — syed.dev",
 };
+
+export const dynamic = "force-dynamic";
 
 const DATE = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
 });
 
-export default function AdminOverviewPage() {
-  const recentLeads = MOCK_LEADS.slice(0, 4);
+export default async function AdminOverviewPage() {
+  const [stats, leads] = await Promise.all([
+    getAdminStats(),
+    fetchLeads({ page: 1 }),
+  ]);
+  const recentLeads = leads.items.slice(0, 4);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
@@ -23,11 +29,11 @@ export default function AdminOverviewPage() {
           / overview
         </p>
         <h1 className="font-display text-3xl font-semibold text-foreground md:text-4xl">
-          Last 30 days at a glance
+          Site at a glance
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
-          All numbers below are mock — they swap to real data once the API routes
-          land in Phase 3.
+          Live counts straight from the database. Traffic charts arrive with the
+          analytics view.
         </p>
       </header>
 
@@ -42,33 +48,33 @@ export default function AdminOverviewPage() {
           <li>
             <StatCard
               label="Projects"
-              value={String(ADMIN_STATS.projects)}
-              trend="2 published this month"
-              hint="Includes drafts and archived case studies."
+              value={String(stats.projects.total)}
+              trend={`${stats.projects.published} live`}
+              hint="Includes drafts and in-progress case studies."
             />
           </li>
           <li>
             <StatCard
               label="Leads"
-              value={String(ADMIN_STATS.leads)}
-              trend="+3 vs prior 30 days"
-              hint="New contact requests across all sources."
+              value={String(stats.leads.total)}
+              trend={`${stats.leads.unread} unread`}
+              hint="Contact requests across all sources."
             />
           </li>
           <li>
             <StatCard
               label="Endorsements"
-              value={String(ADMIN_STATS.endorsements)}
-              trend="4 awaiting review"
+              value={String(stats.endorsements.total)}
+              trend={`${stats.endorsements.pending} awaiting review`}
               hint="Skill endorsements from logged-in users."
             />
           </li>
           <li>
             <StatCard
-              label="Visits"
-              value={ADMIN_STATS.visits.toLocaleString("en-GB")}
-              trend="+18% week over week"
-              hint="Unique sessions across the public site."
+              label="Users"
+              value={String(stats.users.total)}
+              trend={`${stats.users.suspended} suspended`}
+              hint="Registered accounts (user + admin)."
             />
           </li>
         </ul>
@@ -92,26 +98,32 @@ export default function AdminOverviewPage() {
             See all →
           </Link>
         </div>
-        <ul className="flex flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
-          {recentLeads.map((lead) => (
-            <li
-              key={lead.id}
-              className="flex flex-col gap-2 px-5 py-4 md:flex-row md:items-center md:justify-between"
-            >
-              <div className="flex flex-col gap-1">
-                <span className="font-display text-sm font-medium text-foreground">
-                  {lead.name}
+        {recentLeads.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-border bg-surface p-6 text-sm text-muted">
+            No leads yet — they&apos;ll show up here as they come in.
+          </p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface">
+            {recentLeads.map((lead) => (
+              <li
+                key={lead.id}
+                className="flex flex-col gap-2 px-5 py-4 md:flex-row md:items-center md:justify-between"
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="font-display text-sm font-medium text-foreground">
+                    {lead.name}
+                  </span>
+                  <span className="text-xs leading-relaxed text-muted">
+                    {lead.projectType || "Enquiry"} · via {lead.source}
+                  </span>
+                </div>
+                <span className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted">
+                  {DATE.format(new Date(lead.createdAt))}
                 </span>
-                <span className="text-xs leading-relaxed text-muted">
-                  {lead.projectType} · via {lead.source}
-                </span>
-              </div>
-              <span className="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted">
-                {DATE.format(new Date(lead.receivedAt))}
-              </span>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

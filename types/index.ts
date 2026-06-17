@@ -58,6 +58,14 @@ export type UserRole = "user" | "admin";
 
 export type UserStatus = "active" | "suspended";
 
+// Real counts for the admin overview cards (GET /api/admin/stats).
+export type AdminStats = {
+  projects: { total: number; published: number };
+  leads: { total: number; unread: number };
+  endorsements: { total: number; pending: number };
+  users: { total: number; suspended: number };
+};
+
 export type AdminUser = {
   id: string;
   name: string;
