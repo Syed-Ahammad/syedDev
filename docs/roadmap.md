@@ -40,8 +40,8 @@ Each step is sized to finish in one sitting, leaves the app working, and ends wi
 - [ ] 2.26 Deploy this UI version to Vercel ✦ *(already shareable!)*
 
 ## Phase 3 — Back-end (one route at a time)
-- [ ] 3.1 `lib/db.ts` cached Mongo connection + test ping
-- [ ] 3.2 Models: `User`, `Project`, `Lead` (these three first)
+- [x] 3.1 `lib/db.ts` cached Mongo connection + test ping
+- [x] 3.2 Models: `User`, `Project`, `Lead` (these three first)
 - [ ] 3.3 `GET /api/projects` (with search/filter/sort/pagination) → swap mock for real
 - [ ] 3.4 `GET /api/projects/[slug]` + related projects → wire detail page
 - [ ] 3.5 `POST /api/leads` + Zod validation → wire ContactForm
