@@ -51,6 +51,14 @@ describe("Project model", () => {
       .some(([fields]) => Object.values(fields).includes("text"));
     expect(hasTextIndex).toBe(true);
   });
+
+  it("carries the detail-page narrative and key-info fields", () => {
+    for (const field of ["problem", "approach", "outcome", "role"]) {
+      expect(Project.schema.path(field).instance).toBe("String");
+    }
+    expect(Project.schema.path("year").instance).toBe("Number");
+    expect(Project.schema.path("links").instance).toBe("Array");
+  });
 });
 
 describe("Lead model", () => {

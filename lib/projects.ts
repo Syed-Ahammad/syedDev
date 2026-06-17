@@ -1,7 +1,16 @@
 import type { QueryFilter } from "mongoose";
 import { dbConnect } from "@/lib/db";
 import { Project, type IProject } from "@/models/Project";
-import type { Project as ProjectListItem } from "@/types";
+import type {
+  Project as ProjectListItem,
+  ProjectDetail,
+} from "@/types";
+
+/** A single project record carrying both list fields and detail fields. */
+export type ProjectWithDetail = ProjectListItem & ProjectDetail;
+
+const LIST_FIELDS = "slug name tagline type stack status order";
+const DETAIL_FIELDS = `${LIST_FIELDS} problem approach outcome year role links`;
 
 export const PROJECT_SORTS = ["recent", "endorsed", "alpha", "status"] as const;
 export type ProjectSort = (typeof PROJECT_SORTS)[number];
@@ -93,10 +102,88 @@ export async function fetchProjects(
     .sort(sortSpecFor(params.sort))
     .skip((page - 1) * params.limit)
     .limit(params.limit)
-    .select("slug name tagline type stack status order")
+    .select(LIST_FIELDS)
     .lean<ProjectListItem[]>();
 
   return { items, total, page, totalPages };
+}
+
+/** Shape a raw project doc into the detail record, filling missing fields with
+ *  safe fallbacks so the UI never renders "undefined". */
+function mapDetail(doc: IProject): ProjectWithDetail {
+  return {
+    slug: doc.slug,
+    name: doc.name,
+    tagline: doc.tagline ?? "",
+    type: doc.type ?? "",
+    stack: doc.stack ?? [],
+    status: doc.status,
+    order: doc.order,
+    problem: doc.problem ?? "",
+    approach: doc.approach ?? "",
+    outcome: doc.outcome ?? "",
+    year: doc.year ?? new Date().getFullYear(),
+    role: doc.role ?? "",
+    links: doc.links ?? [],
+  };
+}
+
+/**
+ * One published (non-draft) project by slug. Read-only — used by the page and
+ * metadata. The view counter lives in `getProjectBySlugCountingView`.
+ */
+export async function getProjectBySlug(
+  slug: string,
+): Promise<ProjectWithDetail | null> {
+  await dbConnect();
+  const doc = await Project.findOne({ slug, status: { $ne: "draft" } })
+    .select(DETAIL_FIELDS)
+    .lean<IProject | null>();
+  return doc ? mapDetail(doc) : null;
+}
+
+/**
+ * Like `getProjectBySlug` but atomically increments `views` — for the public
+ * GET /api/projects/[slug] route handler.
+ */
+export async function getProjectBySlugCountingView(
+  slug: string,
+): Promise<ProjectWithDetail | null> {
+  await dbConnect();
+  const doc = await Project.findOneAndUpdate(
+    { slug, status: { $ne: "draft" } },
+    { $inc: { views: 1 } },
+    { new: true },
+  )
+    .select(DETAIL_FIELDS)
+    .lean<IProject | null>();
+  return doc ? mapDetail(doc) : null;
+}
+
+/** Up to `limit` other published projects of the same type. */
+export async function getRelatedProjects(
+  project: Pick<ProjectListItem, "slug" | "type">,
+  limit = 3,
+): Promise<ProjectListItem[]> {
+  await dbConnect();
+  return Project.find({
+    type: project.type,
+    slug: { $ne: project.slug },
+    status: { $ne: "draft" },
+  })
+    .sort({ order: 1 })
+    .limit(limit)
+    .select(LIST_FIELDS)
+    .lean<ProjectListItem[]>();
+}
+
+/** Slugs of all published projects, for generateStaticParams. */
+export async function getPublishedSlugs(): Promise<string[]> {
+  await dbConnect();
+  const docs = await Project.find({ status: { $ne: "draft" } })
+    .select("slug")
+    .lean<{ slug: string }[]>();
+  return docs.map((d) => d.slug);
 }
 
 /** Distinct, sorted project types for the filter chips (drafts excluded). */

@@ -52,6 +52,12 @@ UserSchema.index({ provider: 1, providerAccountId: 1 }, {
 | `type` | String | e.g. "SaaS", "Marketplace", "Client demo" |
 | `stack` | [String] | e.g. `["Next.js","MongoDB"]` |
 | `status` | String | enum: `live` \| `in-progress` \| `draft`, default `draft` |
+| `problem` | String | detail page — "The problem" section |
+| `approach` | String | detail page — "My approach" section |
+| `outcome` | String | detail page — "Outcome" section |
+| `year` | Number | detail page — key info |
+| `role` | String | detail page — key info (e.g. "Lead developer") |
+| `links` | [{label, href}] | detail page — key info links |
 | `liveUrl` | String | optional |
 | `repoUrl` | String | optional |
 | `image` | String | optional Vercel Blob URL |

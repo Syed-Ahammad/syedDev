@@ -15,6 +15,12 @@ export interface IProject {
   type?: string;
   stack: string[];
   status: ProjectStatus;
+  problem?: string;
+  approach?: string;
+  outcome?: string;
+  year?: number;
+  role?: string;
+  links?: { label: string; href: string }[];
   liveUrl?: string;
   repoUrl?: string;
   image?: string;
@@ -41,6 +47,12 @@ const ProjectSchema = new Schema<IProject>(
       default: "draft",
       index: true,
     },
+    problem: String,
+    approach: String,
+    outcome: String,
+    year: Number,
+    role: String,
+    links: [{ label: String, href: String, _id: false }],
     liveUrl: String,
     repoUrl: String,
     image: String,
