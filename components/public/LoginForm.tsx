@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { signIn, getSession } from "next-auth/react";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -51,14 +52,25 @@ export function LoginForm() {
     }
   }
 
-  async function runSubmit(next: Values) {
-    setValues(next);
-    setErrors({});
+  const router = useRouter();
+
+  async function doSignIn(email: string, password: string) {
     setStatus("submitting");
     setBanner("");
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setStatus("success");
-    setBanner("Credentials accepted — auth wiring lands in phase 3.");
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    if (!result || result.error) {
+      setStatus("error");
+      setBanner("Wrong email or password.");
+      return;
+    }
+    // Send admins to the admin panel, everyone else to their dashboard.
+    const session = await getSession();
+    router.push(session?.user?.role === "admin" ? "/admin" : "/dashboard");
+    router.refresh();
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -70,12 +82,14 @@ export function LoginForm() {
       setBanner("Fix the highlighted fields and try again.");
       return;
     }
-    await runSubmit(values);
+    setErrors({});
+    await doSignIn(values.email, values.password);
   }
 
   function fillDemo(which: "user" | "admin") {
-    const next = which === "user" ? DEMO_USER : DEMO_ADMIN;
-    void runSubmit(next);
+    const creds = which === "user" ? DEMO_USER : DEMO_ADMIN;
+    setValues(creds);
+    void doSignIn(creds.email, creds.password);
   }
 
   const submitting = status === "submitting";

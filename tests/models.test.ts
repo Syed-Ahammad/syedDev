@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { User } from "@/models/User";
 import { Project } from "@/models/Project";
 import { Lead } from "@/models/Lead";
+import { BlogPost } from "@/models/BlogPost";
+import { Profile } from "@/models/Profile";
 
 // Defining a Mongoose model registers the schema on the default connection but
 // needs no live database, so these assertions run safely in CI.
@@ -26,7 +28,9 @@ describe("User model", () => {
   it("declares the partial unique OAuth index", () => {
     const hasPartialIndex = User.schema
       .indexes()
-      .some(([, opts]) => Boolean(opts?.partialFilterExpression));
+      .some((index: Record<string, unknown>[]) =>
+        Boolean(index[1]?.partialFilterExpression),
+      );
     expect(hasPartialIndex).toBe(true);
   });
 });
@@ -48,7 +52,9 @@ describe("Project model", () => {
     expect(Project.schema.path("slug").isRequired).toBe(true);
     const hasTextIndex = Project.schema
       .indexes()
-      .some(([fields]) => Object.values(fields).includes("text"));
+      .some((index: Record<string, unknown>[]) =>
+        Object.values(index[0]).includes("text"),
+      );
     expect(hasTextIndex).toBe(true);
   });
 
@@ -58,6 +64,24 @@ describe("Project model", () => {
     }
     expect(Project.schema.path("year").instance).toBe("Number");
     expect(Project.schema.path("links").instance).toBe("Array");
+  });
+});
+
+describe("BlogPost model", () => {
+  it("requires title/slug/body and defaults published to false", () => {
+    expect(BlogPost.schema.path("title").isRequired).toBe(true);
+    expect(BlogPost.schema.path("slug").isRequired).toBe(true);
+    expect(BlogPost.schema.path("body").isRequired).toBe(true);
+    expect(BlogPost.schema.path("published").options.default).toBe(false);
+  });
+});
+
+describe("Profile model", () => {
+  it("uses the singleton string _id and holds skills + faq", () => {
+    expect(Profile.schema.path("_id").instance).toBe("String");
+    expect(Profile.schema.path("_id").options.default).toBe("singleton");
+    expect(Profile.schema.path("skills").instance).toBe("Array");
+    expect(Profile.schema.path("faq").instance).toBe("Array");
   });
 });
 
