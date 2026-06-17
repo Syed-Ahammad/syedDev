@@ -81,6 +81,18 @@ export const profileUpdateSchema = z
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 
+export const USER_ROLES = ["user", "admin"] as const;
+
+// Admin user moderation. Partial so a PATCH can flip role, suspended, or both.
+export const userUpdateSchema = z
+  .object({
+    role: z.enum(USER_ROLES),
+    suspended: z.boolean(),
+  })
+  .partial();
+
+export type UserUpdateInput = z.infer<typeof userUpdateSchema>;
+
 export const loginSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email.")),
   password: z.string().min(1, "Enter your password."),

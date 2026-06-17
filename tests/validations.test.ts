@@ -13,6 +13,7 @@ import {
   blogUpdateSchema,
   quoteRequestSchema,
   profileUpdateSchema,
+  userUpdateSchema,
 } from "@/lib/validations";
 
 const valid = {
@@ -258,6 +259,19 @@ describe("profileUpdateSchema", () => {
     expect(
       profileUpdateSchema.safeParse({ bio: "x".repeat(281) }).success,
     ).toBe(false);
+  });
+});
+
+describe("userUpdateSchema", () => {
+  it("allows a partial update (role only, suspended only, empty)", () => {
+    expect(userUpdateSchema.safeParse({ role: "admin" }).success).toBe(true);
+    expect(userUpdateSchema.safeParse({ suspended: true }).success).toBe(true);
+    expect(userUpdateSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("rejects an unknown role and a non-boolean suspended", () => {
+    expect(userUpdateSchema.safeParse({ role: "superadmin" }).success).toBe(false);
+    expect(userUpdateSchema.safeParse({ suspended: "yes" }).success).toBe(false);
   });
 });
 

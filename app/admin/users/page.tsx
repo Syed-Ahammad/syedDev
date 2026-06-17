@@ -1,15 +1,26 @@
 import type { Metadata } from "next";
+import { auth } from "@/lib/auth";
 import { UserTable } from "@/components/admin/UserTable";
-import { MOCK_USERS } from "@/lib/mock-users";
+import { fetchAdminUsers, parseUserListParams } from "@/lib/users";
 
 export const metadata: Metadata = {
   title: "Users — Admin · syed.dev",
 };
 
-export default function AdminUsersPage() {
-  const users = [...MOCK_USERS].sort(
-    (a, b) => new Date(b.lastActiveAt).getTime() - new Date(a.lastActiveAt).getTime(),
-  );
+export const dynamic = "force-dynamic";
+
+type PageProps = {
+  searchParams: Promise<{ role?: string; page?: string }>;
+};
+
+export default async function AdminUsersPage({ searchParams }: PageProps) {
+  const raw = await searchParams;
+  const sp = new URLSearchParams();
+  if (raw.role) sp.set("role", raw.role);
+  if (raw.page) sp.set("page", raw.page);
+
+  const session = await auth();
+  const { items } = await fetchAdminUsers(parseUserListParams(sp));
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -21,12 +32,12 @@ export default function AdminUsersPage() {
           User directory
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
-          Manage roles, suspend abusive accounts, or delete with cascade. Action
-          buttons hook up at step 3.20.
+          Manage roles, suspend abusive accounts, or delete with cascade.
+          Deleting a user also removes their bookmarks and endorsements.
         </p>
       </header>
 
-      <UserTable users={users} />
+      <UserTable users={items} currentUserId={session?.user?.id ?? ""} />
     </div>
   );
 }
