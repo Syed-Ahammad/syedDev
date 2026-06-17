@@ -76,9 +76,9 @@ export type AdminUser = {
   lastActiveAt: string;
 };
 
-export type VisitPoint = {
+export type TimeSeriesPoint = {
   label: string;
-  visits: number;
+  value: number;
 };
 
 export type LeadBreakdown = {
@@ -89,6 +89,14 @@ export type LeadBreakdown = {
 export type EndorsementByProject = {
   project: string;
   count: number;
+};
+
+// Real time-series + breakdowns for the analytics charts
+// (GET /api/admin/analytics?range=).
+export type AnalyticsData = {
+  signups: TimeSeriesPoint[];
+  leadSources: LeadBreakdown[];
+  endorsementsByProject: EndorsementByProject[];
 };
 
 export type Bookmark = {

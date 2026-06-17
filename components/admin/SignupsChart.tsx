@@ -9,13 +9,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { VisitPoint } from "@/types";
+import type { TimeSeriesPoint } from "@/types";
 
 type Props = {
-  data: VisitPoint[];
+  data: TimeSeriesPoint[];
 };
 
-export function VisitsChart({ data }: Props) {
+export function SignupsChart({ data }: Props) {
   return (
     <ResponsiveContainer width="100%" height={260}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
@@ -33,6 +33,7 @@ export function VisitsChart({ data }: Props) {
           tickLine={false}
           axisLine={{ stroke: "var(--color-border)" }}
           width={40}
+          allowDecimals={false}
         />
         <Tooltip
           cursor={{ stroke: "var(--color-coral)", strokeDasharray: "2 2" }}
@@ -47,7 +48,8 @@ export function VisitsChart({ data }: Props) {
         />
         <Line
           type="monotone"
-          dataKey="visits"
+          dataKey="value"
+          name="Signups"
           stroke="var(--color-coral)"
           strokeWidth={2.5}
           dot={{ r: 3, fill: "var(--color-coral)" }}

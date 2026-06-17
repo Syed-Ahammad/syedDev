@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
-import { VisitsChart } from "@/components/admin/VisitsChart";
+import { SignupsChart } from "@/components/admin/SignupsChart";
 import { LeadsPieChart } from "@/components/admin/LeadsPieChart";
 import { EndorsementsBarChart } from "@/components/admin/EndorsementsBarChart";
-import {
-  MOCK_ENDORSEMENTS_BY_PROJECT,
-  MOCK_LEAD_SOURCES,
-  MOCK_VISITS,
-} from "@/lib/mock-analytics";
+import { getAnalytics } from "@/lib/analytics";
 
 export const metadata: Metadata = {
   title: "Analytics — Admin · syed.dev",
 };
 
-export default function AdminAnalyticsPage() {
-  const totalVisits = MOCK_VISITS.reduce((acc, v) => acc + v.visits, 0);
-  const totalLeads = MOCK_LEAD_SOURCES.reduce((acc, s) => acc + s.count, 0);
-  const totalEndorsements = MOCK_ENDORSEMENTS_BY_PROJECT.reduce(
+export const dynamic = "force-dynamic";
+
+const WEEKS = 8;
+
+export default async function AdminAnalyticsPage() {
+  const { signups, leadSources, endorsementsByProject } =
+    await getAnalytics(WEEKS);
+
+  const totalSignups = signups.reduce((acc, p) => acc + p.value, 0);
+  const totalLeads = leadSources.reduce((acc, s) => acc + s.count, 0);
+  const totalEndorsements = endorsementsByProject.reduce(
     (acc, e) => acc + e.count,
     0,
   );
@@ -30,34 +33,50 @@ export default function AdminAnalyticsPage() {
           The numbers behind the site
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted">
-          Charts run on mock data. They&apos;ll switch to /api/admin/analytics in
-          Phase 3 — same shape, real values.
+          Live from the database. There&apos;s no traffic tracking yet, so the
+          trend line shows new account signups instead of page views.
         </p>
       </header>
 
       <ChartPanel
-        eyebrow="weekly visits"
-        title="Traffic"
-        meta={`${totalVisits.toLocaleString("en-GB")} sessions over 11 weeks`}
+        eyebrow={`weekly signups · last ${WEEKS} weeks`}
+        title="New accounts"
+        meta={`${totalSignups} signup${totalSignups === 1 ? "" : "s"} in the window`}
       >
-        <VisitsChart data={MOCK_VISITS} />
+        <SignupsChart data={signups} />
       </ChartPanel>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ChartPanel
           eyebrow="lead sources"
           title="Where briefs come from"
-          meta={`${totalLeads} leads across ${MOCK_LEAD_SOURCES.length} channels`}
+          meta={
+            leadSources.length > 0
+              ? `${totalLeads} leads across ${leadSources.length} channel${leadSources.length === 1 ? "" : "s"}`
+              : "No leads yet"
+          }
         >
-          <LeadsPieChart data={MOCK_LEAD_SOURCES} />
+          {leadSources.length > 0 ? (
+            <LeadsPieChart data={leadSources} />
+          ) : (
+            <EmptyChart label="No leads to chart yet." />
+          )}
         </ChartPanel>
 
         <ChartPanel
           eyebrow="endorsements"
           title="Per project"
-          meta={`${totalEndorsements} approved endorsements`}
+          meta={
+            endorsementsByProject.length > 0
+              ? `${totalEndorsements} approved across ${endorsementsByProject.length} project${endorsementsByProject.length === 1 ? "" : "s"}`
+              : "No approved endorsements yet"
+          }
         >
-          <EndorsementsBarChart data={MOCK_ENDORSEMENTS_BY_PROJECT} />
+          {endorsementsByProject.length > 0 ? (
+            <EndorsementsBarChart data={endorsementsByProject} />
+          ) : (
+            <EmptyChart label="No approved endorsements to chart yet." />
+          )}
         </ChartPanel>
       </div>
     </div>
@@ -90,5 +109,13 @@ function ChartPanel({ eyebrow, title, meta, children }: PanelProps) {
       </div>
       {children}
     </section>
+  );
+}
+
+function EmptyChart({ label }: { label: string }) {
+  return (
+    <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted">
+      {label}
+    </div>
   );
 }
