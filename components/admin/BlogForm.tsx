@@ -2,6 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { AdminBlogItem } from "@/lib/blog";
 
 type Values = {
@@ -98,18 +99,22 @@ export function BlogForm({ editing = null, onClose }: Props) {
         throw new Error(json?.error ?? "Could not save the post.");
       }
       if (editing) {
+        toast.success("Post updated.");
         setValues(EMPTY);
         setOpen(false);
         onClose?.();
       } else {
         setStatus("success");
         setBanner(`Saved "${values.title}" as a draft.`);
+        toast.success("Draft saved.");
         setValues(EMPTY);
       }
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not save the post.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Could not save the post.");
+      setBanner(message);
+      toast.error(message);
     }
   }
 

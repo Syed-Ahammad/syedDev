@@ -71,7 +71,7 @@ Each step is sized to finish in one sitting, leaves the app working, and ends wi
 - [x] 3.25 `lib/ratelimit.ts` (Upstash) → apply to `/api/leads`, `/api/auth/register`, `authorize()`, `/api/user/endorsements` (+ quote requests)
 
 ## Phase 4 — Polish & launch
-- [ ] 4.1 Toasts, loading skeletons, empty states across every page
+- [x] 4.1 Toasts, loading skeletons, empty states across every page
 - [ ] 4.2 SEO: metadata, OG image, sitemap (auto-includes blog + projects), robots.txt
 - [ ] 4.2a Write Playwright specs: `e2e/contact`, `e2e/auth`, `e2e/demo-login`, `e2e/projects` (search/filter/sort), `e2e/endorsements`, `e2e/bookmarks`, `e2e/blog`, `e2e/dark-mode`
 - [ ] 4.3 Full testing-checklist pass (`npm run lint && npm run test && npm run test:e2e && npm run build`)

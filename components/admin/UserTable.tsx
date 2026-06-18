@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { AdminUser, UserRole } from "@/types";
 
 type Props = {
@@ -38,6 +39,7 @@ export function UserTable({ users, currentUserId }: Props) {
     id: string,
     patch: { role?: UserRole; suspended?: boolean },
     optimistic: Partial<AdminUser>,
+    successMessage: string,
   ) {
     if (busyId) return;
     const prev = items;
@@ -56,10 +58,13 @@ export function UserTable({ users, currentUserId }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Couldn't update that user.");
       }
+      toast.success(successMessage);
       router.refresh();
     } catch (e) {
+      const message = e instanceof Error ? e.message : "Couldn't update that user.";
       setItems(prev);
-      setError(e instanceof Error ? e.message : "Couldn't update that user.");
+      setError(message);
+      toast.error(message);
     } finally {
       setBusyId(null);
     }
@@ -85,10 +90,13 @@ export function UserTable({ users, currentUserId }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Couldn't delete that user.");
       }
+      toast.success(`${user.name} deleted.`);
       router.refresh();
     } catch (e) {
+      const message = e instanceof Error ? e.message : "Couldn't delete that user.";
       setItems(prev);
-      setError(e instanceof Error ? e.message : "Couldn't delete that user.");
+      setError(message);
+      toast.error(message);
     } finally {
       setBusyId(null);
     }
@@ -102,7 +110,17 @@ export function UserTable({ users, currentUserId }: Props) {
         </p>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-border bg-surface">
+      {items.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
+          <p className="font-display text-lg font-semibold text-foreground">
+            No users match this filter
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            Clear the role filter to see everyone.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-2xl border border-border bg-surface">
         <table className="w-full min-w-[820px] text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-background/40">
@@ -193,6 +211,7 @@ export function UserTable({ users, currentUserId }: Props) {
                             user.id,
                             { role: nextRole },
                             { role: nextRole },
+                            `${user.name} is now ${nextRole}.`,
                           )
                         }
                         disabled={disabled}
@@ -207,6 +226,9 @@ export function UserTable({ users, currentUserId }: Props) {
                             user.id,
                             { suspended: willSuspend },
                             { status: willSuspend ? "suspended" : "active" },
+                            willSuspend
+                              ? `${user.name} suspended.`
+                              : `${user.name} reinstated.`,
                           )
                         }
                         disabled={disabled}
@@ -229,7 +251,8 @@ export function UserTable({ users, currentUserId }: Props) {
             })}
           </tbody>
         </table>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { AdminProjectItem } from "@/lib/projects";
 
 type Props = {
@@ -28,7 +29,7 @@ export function ProjectTable({ projects, onEdit }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  async function mutate(id: string, init: RequestInit) {
+  async function mutate(id: string, init: RequestInit, successMessage: string) {
     if (busyId) return;
     setBusyId(id);
     setError("");
@@ -38,9 +39,12 @@ export function ProjectTable({ projects, onEdit }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Action failed.");
       }
+      toast.success(successMessage);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Action failed.");
+      const message = e instanceof Error ? e.message : "Action failed.";
+      setError(message);
+      toast.error(message);
     } finally {
       setBusyId(null);
     }
@@ -48,16 +52,33 @@ export function ProjectTable({ projects, onEdit }: Props) {
 
   function toggleStatus(project: AdminProjectItem) {
     const next: Status = project.status === "draft" ? "live" : "draft";
-    void mutate(project.id, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    });
+    void mutate(
+      project.id,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      },
+      next === "live" ? `"${project.name}" published.` : `"${project.name}" archived.`,
+    );
   }
 
   function remove(project: AdminProjectItem) {
     if (!window.confirm(`Delete "${project.name}"? This can't be undone.`)) return;
-    void mutate(project.id, { method: "DELETE" });
+    void mutate(project.id, { method: "DELETE" }, `"${project.name}" deleted.`);
+  }
+
+  if (projects.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
+        <p className="font-display text-lg font-semibold text-foreground">
+          No projects yet
+        </p>
+        <p className="mt-1 text-sm text-muted">
+          Use “+ New project” above to add your first case study.
+        </p>
+      </div>
+    );
   }
 
   return (

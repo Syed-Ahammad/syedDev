@@ -3,6 +3,7 @@
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
+import { toast } from "sonner";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -67,15 +68,18 @@ export function LoginForm() {
       if (!result || result.error) {
         setStatus("error");
         setBanner("Wrong email or password.");
+        toast.error("Wrong email or password.");
         return;
       }
       // Send admins to the admin panel, everyone else to their dashboard.
       const session = await getSession();
+      toast.success("Signed in.");
       router.push(session?.user?.role === "admin" ? "/admin" : "/dashboard");
       router.refresh();
     } catch {
       setStatus("error");
       setBanner("Couldn't reach the sign-in service. Please try again.");
+      toast.error("Couldn't reach the sign-in service. Please try again.");
     }
   }
 

@@ -2,6 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { AdminProfile } from "@/types";
 
 type Props = {
@@ -108,10 +109,13 @@ export function ProfileEditor({ initial }: Props) {
       }
       setStatus("success");
       setBanner("Profile saved.");
+      toast.success("Profile saved.");
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not save the profile.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Could not save the profile.");
+      setBanner(message);
+      toast.error(message);
     }
   }
 

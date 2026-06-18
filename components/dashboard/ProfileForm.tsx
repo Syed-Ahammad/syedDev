@@ -2,6 +2,7 @@
 
 import { useId, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { UserProfile } from "@/types";
 
 type Props = {
@@ -100,10 +101,13 @@ export function ProfileForm({ initial }: Props) {
       }
       setStatus("success");
       setBanner("Profile saved.");
+      toast.success("Profile saved.");
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not save your profile.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Could not save your profile.");
+      setBanner(message);
+      toast.error(message);
     }
   }
 
@@ -122,9 +126,12 @@ export function ProfileForm({ initial }: Props) {
         throw new Error(json?.error ?? "Upload failed.");
       }
       setField("avatarUrl", json.data.url);
+      toast.success("Avatar uploaded.");
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Upload failed.");
+      setBanner(message);
+      toast.error(message);
     } finally {
       setUploading(false);
     }

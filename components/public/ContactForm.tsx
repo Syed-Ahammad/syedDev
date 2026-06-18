@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { leadSchema, type LeadInput } from "@/lib/validations";
 
 type Outcome = "idle" | "success" | "error";
@@ -50,12 +51,14 @@ export function ContactForm() {
       }
       setOutcome("success");
       setBanner("Thanks — I'll reply within 24 hours.");
+      toast.success("Message sent — I'll reply within 24 hours.");
       reset();
     } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setOutcome("error");
-      setBanner(
-        err instanceof Error ? err.message : "Something went wrong. Please try again.",
-      );
+      setBanner(message);
+      toast.error(message);
     }
   }
 

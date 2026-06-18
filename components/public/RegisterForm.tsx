@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 import { z } from "zod";
 import { registerSchema } from "@/lib/validations";
 
@@ -66,14 +67,18 @@ export function RegisterForm() {
       if (result?.error) {
         setOutcome("success");
         setBanner("Account created — please sign in.");
+        toast.success("Account created — please sign in.");
         router.push("/login");
         return;
       }
+      toast.success("Welcome — your account is ready.");
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Registration failed.";
       setOutcome("error");
-      setBanner(err instanceof Error ? err.message : "Registration failed.");
+      setBanner(message);
+      toast.error(message);
     }
   }
 

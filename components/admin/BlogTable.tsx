@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { AdminBlogItem } from "@/lib/blog";
 
 type Props = {
@@ -20,7 +21,7 @@ export function BlogTable({ posts, onEdit }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  async function mutate(id: string, init: RequestInit) {
+  async function mutate(id: string, init: RequestInit, successMessage: string) {
     if (busyId) return;
     setBusyId(id);
     setError("");
@@ -30,25 +31,45 @@ export function BlogTable({ posts, onEdit }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Action failed.");
       }
+      toast.success(successMessage);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Action failed.");
+      const message = e instanceof Error ? e.message : "Action failed.";
+      setError(message);
+      toast.error(message);
     } finally {
       setBusyId(null);
     }
   }
 
   function togglePublish(post: AdminBlogItem) {
-    void mutate(post.id, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ published: !post.published }),
-    });
+    void mutate(
+      post.id,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: !post.published }),
+      },
+      post.published ? `"${post.title}" unpublished.` : `"${post.title}" published.`,
+    );
   }
 
   function remove(post: AdminBlogItem) {
     if (!window.confirm(`Delete "${post.title}"? This can't be undone.`)) return;
-    void mutate(post.id, { method: "DELETE" });
+    void mutate(post.id, { method: "DELETE" }, `"${post.title}" deleted.`);
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
+        <p className="font-display text-lg font-semibold text-foreground">
+          No posts yet
+        </p>
+        <p className="mt-1 text-sm text-muted">
+          Use “+ New post” above to draft your first article.
+        </p>
+      </div>
+    );
   }
 
   return (

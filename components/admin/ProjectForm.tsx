@@ -2,6 +2,7 @@
 
 import { useId, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { AdminProjectItem } from "@/lib/projects";
 
 function slugify(value: string): string {
@@ -103,9 +104,12 @@ export function ProjectForm({ editing = null, onClose }: Props) {
         throw new Error(json?.error ?? "Upload failed.");
       }
       setImageUrl(json.data.url);
+      toast.success("Cover image uploaded.");
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Upload failed.");
+      setBanner(message);
+      toast.error(message);
     } finally {
       setUploading(false);
     }
@@ -166,13 +170,16 @@ export function ProjectForm({ editing = null, onClose }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Could not save the project.");
       }
+      toast.success(editing ? "Project updated." : "Project created.");
       reset();
       setOpen(false);
       onClose?.();
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not save the project.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Could not save the project.");
+      setBanner(message);
+      toast.error(message);
     }
   }
 

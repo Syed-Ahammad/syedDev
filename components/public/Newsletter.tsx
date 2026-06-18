@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -18,6 +19,7 @@ export function Newsletter() {
     if (!EMAIL_RE.test(email.trim())) {
       setStatus("error");
       setMessage("That doesn't look like a valid email address.");
+      toast.error("That doesn't look like a valid email address.");
       return;
     }
     setStatus("submitting");
@@ -25,6 +27,7 @@ export function Newsletter() {
     await new Promise((resolve) => setTimeout(resolve, 500));
     setStatus("success");
     setMessage("Thanks — I'll only email when there's something worth reading.");
+    toast.success("Subscribed — I'll only email when it's worth reading.");
     setEmail("");
   }
 

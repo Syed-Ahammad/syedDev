@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Props = {
   projectId: string;
@@ -46,7 +47,12 @@ export function BookmarkButton({ projectId }: Props) {
         const res = await fetch(`/api/user/bookmarks/${bookmarkId}`, {
           method: "DELETE",
         });
-        if (res.ok) setBookmarkId(null);
+        if (res.ok) {
+          setBookmarkId(null);
+          toast.success("Removed from bookmarks.");
+        } else {
+          toast.error("Could not remove the bookmark.");
+        }
       } else {
         const res = await fetch("/api/user/bookmarks", {
           method: "POST",
@@ -54,7 +60,12 @@ export function BookmarkButton({ projectId }: Props) {
           body: JSON.stringify({ projectId }),
         });
         const json = await res.json().catch(() => null);
-        if (res.ok && json?.success) setBookmarkId(json.data.id);
+        if (res.ok && json?.success) {
+          setBookmarkId(json.data.id);
+          toast.success("Saved to bookmarks.");
+        } else {
+          toast.error("Could not save the bookmark.");
+        }
       }
     } finally {
       setBusy(false);

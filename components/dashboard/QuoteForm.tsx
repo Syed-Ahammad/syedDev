@@ -2,6 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Values = {
   title: string;
@@ -105,11 +106,14 @@ export function QuoteForm() {
       }
       setStatus("success");
       setBanner(`Brief "${values.title}" sent — I'll reply here soon.`);
+      toast.success("Brief sent — I'll reply here soon.");
       setValues(EMPTY);
       router.refresh();
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not send your brief.";
       setStatus("error");
-      setBanner(err instanceof Error ? err.message : "Could not send your brief.");
+      setBanner(message);
+      toast.error(message);
     }
   }
 

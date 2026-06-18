@@ -2,6 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Props = {
   projects: { id: string; slug: string; name: string }[];
@@ -77,13 +78,15 @@ export function EndorsementForm({ projects, skills }: Props) {
       }
       setStatus("success");
       setBanner("Thanks — your endorsement is queued for review.");
+      toast.success("Endorsement queued for review.");
       setValues(EMPTY);
       router.refresh();
     } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Could not submit your endorsement.";
       setStatus("error");
-      setBanner(
-        err instanceof Error ? err.message : "Could not submit your endorsement.",
-      );
+      setBanner(message);
+      toast.error(message);
     }
   }
 

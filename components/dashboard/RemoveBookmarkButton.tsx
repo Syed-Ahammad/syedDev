@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Props = {
   bookmarkId: string;
@@ -18,7 +19,12 @@ export function RemoveBookmarkButton({ bookmarkId, projectName }: Props) {
       const res = await fetch(`/api/user/bookmarks/${bookmarkId}`, {
         method: "DELETE",
       });
-      if (res.ok) router.refresh();
+      if (res.ok) {
+        toast.success(`Removed ${projectName} from bookmarks.`);
+        router.refresh();
+      } else {
+        toast.error("Could not remove the bookmark.");
+      }
     } finally {
       setBusy(false);
     }

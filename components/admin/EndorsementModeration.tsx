@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import type { Endorsement, EndorsementStatus } from "@/types";
 
 type Props = {
@@ -48,13 +49,15 @@ export function EndorsementModeration({ initial }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.error ?? "Couldn't update that endorsement.");
       }
+      toast.success(`Endorsement marked ${next}.`);
     } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Couldn't update that endorsement.";
       setItems((prev) =>
         prev.map((it) => (it.id === id ? { ...it, status: prevStatus } : it)),
       );
-      setError(
-        e instanceof Error ? e.message : "Couldn't update that endorsement.",
-      );
+      setError(message);
+      toast.error(message);
     } finally {
       setBusyId(null);
     }

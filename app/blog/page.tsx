@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Navbar } from "@/components/public/Navbar";
 import { Footer } from "@/components/public/Footer";
-import { BlogCard } from "@/components/public/BlogCard";
-import { BlogTagFilters } from "@/components/public/BlogTagFilters";
-import { getPublishedPosts, getPublishedTags } from "@/lib/blog";
+import { BlogBrowser, BlogBrowserSkeleton } from "@/components/public/BlogBrowser";
 
 export const metadata: Metadata = {
   title: "Blog — Syed Ahammad",
@@ -18,11 +17,6 @@ type PageProps = {
 export default async function BlogIndexPage({ searchParams }: PageProps) {
   const raw = await searchParams;
   const activeTag = (raw.tag ?? "").trim();
-
-  const [sorted, tags] = await Promise.all([
-    getPublishedPosts(activeTag || undefined),
-    getPublishedTags(),
-  ]);
 
   return (
     <>
@@ -42,44 +36,12 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
             </p>
           </header>
 
-          <BlogTagFilters tags={tags} activeTag={activeTag} />
-
-          <p
-            className="mt-6 font-mono text-xs uppercase tracking-[0.14em] text-muted"
-            aria-live="polite"
-          >
-            Showing {sorted.length}
-            {sorted.length === 1 ? " post" : " posts"}
-            {activeTag ? ` tagged "${activeTag}"` : ""}
-          </p>
-
-          {sorted.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <ul className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {sorted.map((post) => (
-                <li key={post.slug}>
-                  <BlogCard post={post} />
-                </li>
-              ))}
-            </ul>
-          )}
+          <Suspense key={activeTag} fallback={<BlogBrowserSkeleton />}>
+            <BlogBrowser activeTag={activeTag} />
+          </Suspense>
         </div>
       </main>
       <Footer />
     </>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="mt-8 rounded-2xl border border-border bg-surface p-12 text-center">
-      <p className="font-display text-xl font-semibold text-foreground">
-        No posts under that tag yet
-      </p>
-      <p className="mt-2 text-sm text-muted">
-        Pick a different tag or browse everything.
-      </p>
-    </div>
   );
 }
