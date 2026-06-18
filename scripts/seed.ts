@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 import { dbConnect } from "../lib/db";
 import { User } from "../models/User";
 import { Project } from "../models/Project";
+import { Bookmark } from "../models/Bookmark";
 import { BlogPost } from "../models/BlogPost";
 import { Profile } from "../models/Profile";
 import { Endorsement } from "../models/Endorsement";
@@ -45,6 +46,7 @@ async function seedUsers() {
         "ADMIN_PASSWORD",
         env("NEXT_PUBLIC_DEMO_ADMIN_PASSWORD", "demo-admin-pass"),
       ),
+      suspended: false,
     },
     {
       name: "Demo User",
@@ -54,6 +56,15 @@ async function seedUsers() {
         "DEMO_USER_PASSWORD",
         env("NEXT_PUBLIC_DEMO_USER_PASSWORD", "demo-user-pass"),
       ),
+      suspended: false,
+    },
+    {
+      // A suspended account so the admin user directory has a non-active row.
+      name: "Suspicious Account",
+      role: "user" as const,
+      email: "suspicious@example.com",
+      password: "suspicious-pass1",
+      suspended: true,
     },
   ];
 
@@ -67,7 +78,7 @@ async function seedUsers() {
           role: account.role,
           provider: "credentials",
           passwordHash,
-          suspended: false,
+          suspended: account.suspended ?? false,
         },
       },
       { upsert: true, new: true },
@@ -228,6 +239,30 @@ async function seedQuotes() {
   return MOCK_QUOTES.length;
 }
 
+// Give the demo user a couple of bookmarks so the dashboard bookmarks page
+// isn't empty. Keyed on (user, project) so re-running never duplicates.
+async function seedBookmarks() {
+  const demoEmail = env(
+    "DEMO_USER_EMAIL",
+    env("NEXT_PUBLIC_DEMO_USER_EMAIL", "demo@syed.dev"),
+  ).toLowerCase();
+  const demo = await User.findOne({ email: demoEmail });
+  if (!demo) return 0;
+
+  let count = 0;
+  for (const slug of ["groceri", "restaurant-pos"]) {
+    const project = await Project.findOne({ slug }).select("_id");
+    if (!project) continue;
+    await Bookmark.findOneAndUpdate(
+      { userId: demo._id, projectId: project._id },
+      { $setOnInsert: { userId: demo._id, projectId: project._id } },
+      { upsert: true, new: true },
+    );
+    count++;
+  }
+  return count;
+}
+
 async function seedProfile() {
   await Profile.findByIdAndUpdate(
     "singleton",
@@ -294,6 +329,7 @@ async function main() {
   await seedProfile();
   const endorsements = await seedEndorsements();
   const quotes = await seedQuotes();
+  const bookmarks = await seedBookmarks();
 
   console.log("Seed complete:");
   console.log(`  users:        ${users.join(", ")}`);
@@ -302,6 +338,7 @@ async function main() {
   console.log("  profile:      singleton upserted");
   console.log(`  endorsements: ${endorsements} upserted (+ endorser accounts)`);
   console.log(`  quotes:       ${quotes} upserted (demo user)`);
+  console.log(`  bookmarks:    ${bookmarks} upserted (demo user)`);
 
   await mongoose.disconnect();
 }

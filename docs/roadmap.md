@@ -40,35 +40,35 @@ Each step is sized to finish in one sitting, leaves the app working, and ends wi
 - [ ] 2.26 Deploy this UI version to Vercel ✦ *(already shareable!)*
 
 ## Phase 3 — Back-end (one route at a time)
-- [ ] 3.1 `lib/db.ts` cached Mongo connection + test ping
-- [ ] 3.2 Models: `User`, `Project`, `Lead` (these three first)
-- [ ] 3.3 `GET /api/projects` (with search/filter/sort/pagination) → swap mock for real
-- [ ] 3.4 `GET /api/projects/[slug]` + related projects → wire detail page
-- [ ] 3.5 `POST /api/leads` + Zod validation → wire ContactForm
-- [ ] 3.6 NextAuth setup: Credentials provider + `session.user.role` augmentation
-- [ ] 3.6a `POST /api/auth/register` (Zod, bcrypt) → wire Register page
-- [ ] 3.6b Google OAuth provider — auto-creates `user` role on first sign-in
-- [ ] 3.7 `scripts/seed.ts` (idempotent): admin user + demo user + Profile singleton + sample projects + sample blog posts; add `"seed": "tsx scripts/seed.ts"` script
-- [ ] 3.7a Wire **Demo User** and **Demo Admin** buttons on `/login` (read from `NEXT_PUBLIC_DEMO_*` env)
-- [ ] 3.8 `middleware.ts` → role-aware redirects (`/admin/*` → admin only; `/dashboard/*` → user/admin; logged-in users skipping `/login` → their dashboard)
-- [ ] 3.9 `requireSession()` + `requireRole()` helpers → guard all `/api/admin/*` and `/api/user/*`
-- [ ] 3.10 Admin leads CRUD (`GET`, `PATCH`, `DELETE`)
-- [ ] 3.11 Admin projects CRUD
-- [ ] 3.11a `POST /api/admin/upload` (Vercel Blob, ≤4 MB, image/*) → wire `ProjectForm` and user avatar upload
-- [ ] 3.12 Models: `Endorsement`, `Bookmark`, `BlogPost`
-- [ ] 3.13 User bookmarks routes → wire `/dashboard/bookmarks` + "Bookmark" buttons on detail page
-- [ ] 3.14 User endorsements routes (rate-limited 10/hr/user) → wire submit form
-- [ ] 3.15 Admin endorsements moderation routes + atomic `endorsementCount` update → wire queue
-- [ ] 3.16 Public `GET /api/endorsements?projectId=` → wire `EndorsementsWall` + detail page
-- [ ] 3.17 Admin blog CRUD + public `GET /api/blog` & `GET /api/blog/[slug]` → wire blog pages
-- [ ] 3.18 User quote requests route → wire `/dashboard/quotes`
-- [ ] 3.19 User profile route (incl. avatar upload) → wire `/dashboard/profile`
-- [ ] 3.20 Admin users route (list / role change / suspend / delete with cascade) → wire `/admin/users`
-- [ ] 3.21 Admin stats route → real overview numbers
-- [ ] 3.22 Admin analytics route → wire 3 charts (visits/leads/endorsements)
-- [ ] 3.23 `revalidatePath` after all admin writes per `api-structure.md` table
-- [ ] 3.24 `Profile` editor (admin) → wire
-- [ ] 3.25 `lib/ratelimit.ts` (Upstash) → apply to `/api/leads`, `/api/auth/register`, `authorize()`, `/api/user/endorsements`
+- [x] 3.1 `lib/db.ts` cached Mongo connection + test ping
+- [x] 3.2 Models: `User`, `Project`, `Lead` (these three first)
+- [x] 3.3 `GET /api/projects` (with search/filter/sort/pagination) → swap mock for real
+- [x] 3.4 `GET /api/projects/[slug]` + related projects → wire detail page
+- [x] 3.5 `POST /api/leads` + Zod validation → wire ContactForm
+- [x] 3.6 NextAuth setup: Credentials provider + `session.user.role` augmentation
+- [x] 3.6a `POST /api/auth/register` (Zod, bcrypt) → wire Register page
+- [x] 3.6b Google OAuth provider — auto-creates `user` role on first sign-in
+- [x] 3.7 `scripts/seed.ts` (idempotent): admin user + demo user + Profile singleton + sample projects + sample blog posts; add `"seed": "tsx scripts/seed.ts"` script
+- [x] 3.7a Wire **Demo User** and **Demo Admin** buttons on `/login` (read from `NEXT_PUBLIC_DEMO_*` env)
+- [x] 3.8 `middleware.ts` → role-aware redirects (`/admin/*` → admin only; `/dashboard/*` → user/admin; logged-in users skipping `/login` → their dashboard)
+- [x] 3.9 `requireSession()` + `requireRole()` helpers → guard all `/api/admin/*` and `/api/user/*`
+- [x] 3.10 Admin leads CRUD (`GET`, `PATCH`, `DELETE`)
+- [x] 3.11 Admin projects CRUD
+- [x] 3.11a `POST /api/admin/upload` (Vercel Blob, ≤4 MB, image/*) → wire `ProjectForm` and user avatar upload
+- [x] 3.12 Models: `Endorsement`, `Bookmark`, `BlogPost`
+- [x] 3.13 User bookmarks routes → wire `/dashboard/bookmarks` + "Bookmark" buttons on detail page
+- [x] 3.14 User endorsements routes (rate-limited 10/hr/user) → wire submit form
+- [x] 3.15 Admin endorsements moderation routes + atomic `endorsementCount` update → wire queue
+- [x] 3.16 Public `GET /api/endorsements?projectId=` → wire `EndorsementsWall` + detail page
+- [x] 3.17 Admin blog CRUD + public `GET /api/blog` & `GET /api/blog/[slug]` → wire blog pages
+- [x] 3.18 User quote requests route → wire `/dashboard/quotes`
+- [x] 3.19 User profile route (incl. avatar upload) → wire `/dashboard/profile`
+- [x] 3.20 Admin users route (list / role change / suspend / delete with cascade) → wire `/admin/users`
+- [x] 3.21 Admin stats route → real overview numbers
+- [x] 3.22 Admin analytics route → wire 3 charts (signups/leads/endorsements)
+- [x] 3.23 `revalidatePath` after all admin writes per `api-structure.md` table
+- [x] 3.24 `Profile` editor (admin) → wire (+ public Hero/FAQ/Footer/About/Stack now read the singleton)
+- [x] 3.25 `lib/ratelimit.ts` (Upstash) → apply to `/api/leads`, `/api/auth/register`, `authorize()`, `/api/user/endorsements` (+ quote requests)
 
 ## Phase 4 — Polish & launch
 - [ ] 4.1 Toasts, loading skeletons, empty states across every page

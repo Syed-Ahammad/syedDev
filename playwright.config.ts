@@ -15,9 +15,16 @@ export default defineConfig({
     contextOptions: { reducedMotion: "reduce" },
   },
   projects: [
+    // Logs in as the demo user + admin and saves their session to
+    // playwright/.auth/*.json for the authenticated specs to reuse.
+    { name: "setup", testMatch: /.*\.setup\.ts/ },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      // The auth specs supply their own storageState per describe block, so the
+      // default project state stays logged-out (public pages must render as a guest).
+      testIgnore: /.*\.setup\.ts/,
+      dependencies: ["setup"],
     },
   ],
   webServer: {

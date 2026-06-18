@@ -1,11 +1,18 @@
 import { test, expect } from "@playwright/test";
 
+const adminState = "playwright/.auth/admin.json";
+const userState = "playwright/.auth/user.json";
+
+// ---------------------------------------------------------------------------
+// Public pages — rendered as a guest (no stored auth state).
+// ---------------------------------------------------------------------------
+
 test("home page renders hero and navbar", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
   await expect(
-    page.getByRole("heading", { level: 1, name: /i build .* reliable web apps/i }),
+    page.getByRole("heading", { level: 1, name: /full-stack products that ship/i }),
   ).toBeVisible();
   await expect(page.getByRole("link", { name: /start a project/i })).toBeVisible();
 
@@ -33,10 +40,10 @@ test("home page renders hero and navbar", async ({ page }) => {
   await page
     .getByRole("heading", { level: 2, name: /questions i hear a lot/i })
     .scrollIntoViewIfNeeded();
-  const firstFaq = page.locator("details", { hasText: /typical project timeline/i }).first();
+  const firstFaq = page.locator("details", { hasText: /what do you build/i }).first();
   await expect(firstFaq).toBeVisible();
   await firstFaq.locator("summary").click();
-  await expect(firstFaq).toContainText(/share a weekly demo/i);
+  await expect(firstFaq).toContainText(/full-stack web apps/i);
 
   await page
     .getByRole("heading", { level: 2, name: /short notes when i ship/i })
@@ -73,10 +80,10 @@ test("projects page filters, sorts, paginates via URL", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: /everything i.ve built so far/i }),
   ).toBeVisible();
-  await expect(page.getByText(/showing 8 of 12 projects/i)).toBeVisible();
+  await expect(page.getByText(/showing 8 of 11 projects/i)).toBeVisible();
 
   await page.goto("/projects?type=Internal%20tool");
-  await expect(page.getByText(/showing 3 of 3 projects/i)).toBeVisible();
+  await expect(page.getByText(/showing 2 of 2 projects/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /restaurant pos/i })).toBeVisible();
 
   await page.goto("/projects?sort=alpha");
@@ -84,7 +91,7 @@ test("projects page filters, sorts, paginates via URL", async ({ page }) => {
   await expect(firstCardName).toContainText(/cafe loyalty/i);
 
   await page.goto("/projects?page=2");
-  await expect(page.getByText(/showing 4 of 12 projects/i)).toBeVisible();
+  await expect(page.getByText(/showing 3 of 11 projects/i)).toBeVisible();
   await expect(page.locator("a[aria-current='page']")).toHaveText("2");
 
   await page.goto("/projects?q=zzznomatch");
@@ -183,212 +190,7 @@ test("about page renders story, principles and CTA", async ({ page }) => {
   ]);
 });
 
-test("admin shell renders sidebar with 7 items and marks Overview active", async ({
-  page,
-}) => {
-  await page.goto("/admin");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /last 30 days at a glance/i }),
-  ).toBeVisible();
-
-  const desktopSidebar = page.getByRole("complementary", { name: "Admin" });
-  const sectionsNav = desktopSidebar.getByRole("navigation", {
-    name: /admin sections$/i,
-  });
-  const links = sectionsNav.getByRole("link");
-  await expect(links).toHaveCount(7);
-
-  const expected = [
-    "Overview",
-    "Projects",
-    "Leads",
-    "Blog",
-    "Endorsements",
-    "Users",
-    "Analytics",
-  ];
-  for (const label of expected) {
-    await expect(
-      sectionsNav.getByRole("link", { name: new RegExp(label, "i") }),
-    ).toBeVisible();
-  }
-
-  await expect(sectionsNav.locator("[aria-current='page']")).toHaveText(
-    /overview/i,
-  );
-
-  await expect(page.getByLabel(/signed in as/i)).toContainText(/syed/i);
-  await expect(page.getByLabel(/signed in as/i)).toContainText(
-    /admin@syed\.dev/i,
-  );
-});
-
-test("dashboard shell renders sidebar with 5 items and marks Overview active", async ({
-  page,
-}) => {
-  await page.goto("/dashboard");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /welcome back, demo user/i }),
-  ).toBeVisible();
-
-  const desktopSidebar = page.getByRole("complementary", { name: "Dashboard" });
-  const sectionsNav = desktopSidebar.getByRole("navigation", {
-    name: /dashboard sections$/i,
-  });
-  const links = sectionsNav.getByRole("link");
-  await expect(links).toHaveCount(5);
-
-  const expected = [
-    "Overview",
-    "Bookmarks",
-    "Endorsements",
-    "Quote requests",
-    "Profile",
-  ];
-  for (const label of expected) {
-    await expect(
-      sectionsNav.getByRole("link", { name: new RegExp(label, "i") }),
-    ).toBeVisible();
-  }
-
-  await expect(sectionsNav.locator("[aria-current='page']")).toHaveText(
-    /overview/i,
-  );
-
-  await expect(page.getByLabel(/signed in as/i)).toContainText(/demo user/i);
-  await expect(page.getByLabel(/signed in as/i)).toContainText(
-    /demo@syed\.dev/i,
-  );
-});
-
-test("admin projects page lists projects and exposes a new-project form", async ({
-  page,
-}) => {
-  await page.goto("/admin/projects");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /project catalog/i }),
-  ).toBeVisible();
-  await expect(page.getByText(/dirham/i).first()).toBeVisible();
-
-  const newBtn = page.getByRole("button", { name: /\+ new project/i });
-  await newBtn.click();
-  await expect(
-    page.getByRole("heading", { level: 3, name: /^new project$/i }),
-  ).toBeVisible();
-
-  await page.getByRole("button", { name: /save project/i }).click();
-  await expect(
-    page.getByRole("status").filter({ hasText: /highlighted fields/i }),
-  ).toBeVisible();
-});
-
-test("admin leads page filters by status", async ({ page }) => {
-  await page.goto("/admin/leads");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /incoming briefs/i }),
-  ).toBeVisible();
-  await expect(page.getByText(/showing 8 leads/i)).toBeVisible();
-
-  await page.goto("/admin/leads?status=new");
-  await expect(page.getByText(/showing 2 leads marked "new"/i)).toBeVisible();
-});
-
-test("admin blog page lists posts and exposes a new-post form", async ({
-  page,
-}) => {
-  await page.goto("/admin/blog");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /post manager/i }),
-  ).toBeVisible();
-  await expect(
-    page.getByText(/shipping a portfolio in next\.js/i),
-  ).toBeVisible();
-
-  await page.getByRole("button", { name: /\+ new post/i }).click();
-  await expect(
-    page.getByRole("heading", { level: 3, name: /^new post$/i }),
-  ).toBeVisible();
-});
-
-test("admin endorsements queue approves a pending item", async ({ page }) => {
-  await page.goto("/admin/endorsements");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /moderation queue/i }),
-  ).toBeVisible();
-
-  const pendingTab = page.getByRole("tab", { name: /pending/i });
-  await expect(pendingTab).toHaveAttribute("aria-selected", "true");
-
-  const firstApprove = page.getByRole("button", { name: /^approve$/i }).first();
-  await firstApprove.click();
-
-  await page.getByRole("tab", { name: /^approved/i }).click();
-  await expect(page.getByText(/vercel deploys/i)).toBeVisible();
-});
-
-test("admin users page lists users with role badges", async ({ page }) => {
-  await page.goto("/admin/users");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /user directory/i }),
-  ).toBeVisible();
-  const table = page.getByRole("table");
-  await expect(table.getByText(/admin@syed\.dev/i)).toBeVisible();
-  await expect(table.getByText(/suspicious account/i)).toBeVisible();
-});
-
-test("admin analytics page renders three chart panels", async ({ page }) => {
-  await page.goto("/admin/analytics");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /the numbers behind the site/i }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("region", { name: /^traffic$/i }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("region", { name: /where briefs come from/i }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("region", { name: /per project/i }),
-  ).toBeVisible();
-});
-
-test("profile dropdown opens, lists items, and closes on Escape", async ({
-  page,
-}) => {
-  await page.goto("/dashboard");
-
-  const trigger = page.getByRole("button", {
-    name: /signed in as demo user/i,
-  });
-  await expect(trigger).toHaveAttribute("aria-expanded", "false");
-
-  await trigger.click();
-  await expect(trigger).toHaveAttribute("aria-expanded", "true");
-
-  const menu = page.getByRole("menu", { name: /profile menu/i });
-  await expect(
-    menu.getByRole("menuitem", { name: /view profile/i }),
-  ).toBeVisible();
-  await expect(
-    menu.getByRole("menuitem", { name: /visit public site/i }),
-  ).toBeVisible();
-  await expect(
-    menu.getByRole("menuitem", { name: /sign out/i }),
-  ).toBeVisible();
-
-  await page.keyboard.press("Escape");
-  await expect(trigger).toHaveAttribute("aria-expanded", "false");
-});
-
-test("login page validates and accepts a demo prefill", async ({ page }) => {
+test("login page validates then signs in with a demo account", async ({ page }) => {
   await page.goto("/login");
 
   await expect(
@@ -399,10 +201,9 @@ test("login page validates and accepts a demo prefill", async ({ page }) => {
   await form.getByRole("button", { name: /sign in/i }).click();
   await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
 
+  // The demo button performs a real credentials sign-in and redirects in.
   await form.getByRole("button", { name: /demo user/i }).click();
-  await expect(form.getByRole("status")).toContainText(
-    /credentials accepted/i,
-  );
+  await page.waitForURL(/\/dashboard/);
 });
 
 test("register page validates and shows confirmation message", async ({ page }) => {
@@ -420,10 +221,13 @@ test("register page validates and shows confirmation message", async ({ page }) 
   await form.getByRole("button", { name: /create account/i }).click();
   await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
 
-  await form.getByLabel(/^password$/i).fill("longenough");
-  await form.getByLabel(/confirm password/i).fill("longenough");
+  // A unique email keeps the create idempotent across runs; the schema needs a
+  // digit in the password. On success the app signs in and redirects to /dashboard.
+  await form.getByLabel(/^email$/i).fill(`visitor-${Date.now()}@example.com`);
+  await form.getByLabel(/^password$/i).fill("longenough1");
+  await form.getByLabel(/confirm password/i).fill("longenough1");
   await form.getByRole("button", { name: /create account/i }).click();
-  await expect(form.getByRole("status")).toContainText(/registration lands/i);
+  await page.waitForURL(/\/dashboard/);
 });
 
 test("contact page submits the form successfully", async ({ page }) => {
@@ -444,86 +248,6 @@ test("contact page submits the form successfully", async ({ page }) => {
     .fill("Hi — I'd love to chat about a small storefront build for my bakery.");
   await form.getByRole("button", { name: /send message/i }).click();
   await expect(form.getByRole("status")).toContainText(/reply within 24 hours/i);
-});
-
-test("dashboard overview shows at-a-glance stats and recent bookmarks", async ({
-  page,
-}) => {
-  await page.goto("/dashboard");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /welcome back, demo/i }),
-  ).toBeVisible();
-
-  const glance = page.getByRole("region", { name: /at a glance/i });
-  await expect(glance.getByRole("link", { name: /bookmarks/i })).toBeVisible();
-  await expect(glance.getByRole("link", { name: /endorsements/i })).toBeVisible();
-  await expect(glance.getByRole("link", { name: /open quotes/i })).toBeVisible();
-
-  const recent = page.getByRole("region", { name: /recent bookmarks/i });
-  await expect(
-    recent.getByRole("link", { name: /^hotel inventory$/i }),
-  ).toBeVisible();
-});
-
-test("dashboard bookmarks lists saved projects", async ({ page }) => {
-  await page.goto("/dashboard/bookmarks");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /projects you.ve saved/i }),
-  ).toBeVisible();
-  await expect(page.getByRole("link", { name: /^groceri$/i })).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /remove restaurant pos bookmark/i }),
-  ).toBeVisible();
-});
-
-test("dashboard endorsements form validates then accepts a submission", async ({
-  page,
-}) => {
-  await page.goto("/dashboard/endorsements");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /endorse what you.ve actually used/i }),
-  ).toBeVisible();
-
-  const form = page.locator("form").filter({ hasText: /endorse a project/i });
-  await form.getByRole("button", { name: /submit endorsement/i }).click();
-  await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
-
-  await form.getByLabel(/^project$/i).selectOption("dirham");
-  await form.getByLabel(/^skill$/i).fill("Reporting UX");
-  await form
-    .getByLabel(/your endorsement/i)
-    .fill("Filed VAT in under ten minutes — best fintech UX I've used this year.");
-  await form.getByRole("button", { name: /submit endorsement/i }).click();
-  await expect(form.getByRole("status")).toContainText(/queued for review/i);
-});
-
-test("dashboard quotes form validates then accepts a submission", async ({
-  page,
-}) => {
-  await page.goto("/dashboard/quotes");
-
-  await expect(
-    page.getByRole("heading", { level: 1, name: /briefs and where they stand/i }),
-  ).toBeVisible();
-
-  const form = page.locator("form").filter({ hasText: /send a new brief/i });
-  await form.getByRole("button", { name: /send brief/i }).click();
-  await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
-
-  await form.getByLabel(/^title$/i).fill("Bakery storefront");
-  await form
-    .getByLabel(/^project type$/i)
-    .selectOption("Landing page or storefront");
-  await form.getByLabel(/^budget$/i).selectOption("AED 5k – 10k");
-  await form.getByLabel(/^timeline$/i).selectOption("3–4 weeks");
-  await form
-    .getByLabel(/^brief$/i)
-    .fill("Small bakery in JLT. Need pickup orders with WhatsApp confirmation.");
-  await form.getByRole("button", { name: /send brief/i }).click();
-  await expect(form.getByRole("status")).toContainText(/queued/i);
 });
 
 test("home reveals respect prefers-reduced-motion", async ({ page, context }) => {
@@ -553,19 +277,326 @@ test("home reveals respect prefers-reduced-motion", async ({ page, context }) =>
   }).toEqual({ opacity: "1", transform: "none" });
 });
 
-test("dashboard profile editor validates and saves", async ({ page }) => {
-  await page.goto("/dashboard/profile");
+// ---------------------------------------------------------------------------
+// Admin area — middleware-protected; runs with the seeded admin's session.
+// ---------------------------------------------------------------------------
 
-  await expect(
-    page.getByRole("heading", { level: 1, name: /your account/i }),
-  ).toBeVisible();
+test.describe("admin area (authenticated)", () => {
+  test.use({ storageState: adminState });
 
-  const form = page.locator("form").filter({ hasText: /save changes/i });
-  await form.getByLabel(/avatar url/i).fill("not-a-url");
-  await form.getByRole("button", { name: /save changes/i }).click();
-  await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
+  test("admin shell renders sidebar with 8 items and marks Overview active", async ({
+    page,
+  }) => {
+    await page.goto("/admin");
 
-  await form.getByLabel(/avatar url/i).fill("https://example.com/me.png");
-  await form.getByRole("button", { name: /save changes/i }).click();
-  await expect(form.getByRole("status")).toContainText(/profile saved/i);
+    await expect(
+      page.getByRole("heading", { level: 1, name: /site at a glance/i }),
+    ).toBeVisible();
+
+    const desktopSidebar = page.getByRole("complementary", { name: "Admin" });
+    const sectionsNav = desktopSidebar.getByRole("navigation", {
+      name: /admin sections$/i,
+    });
+    const links = sectionsNav.getByRole("link");
+    await expect(links).toHaveCount(8);
+
+    const expected = [
+      "Overview",
+      "Projects",
+      "Leads",
+      "Blog",
+      "Endorsements",
+      "Users",
+      "Analytics",
+      "Profile",
+    ];
+    for (const label of expected) {
+      await expect(
+        sectionsNav.getByRole("link", { name: new RegExp(label, "i") }),
+      ).toBeVisible();
+    }
+
+    await expect(sectionsNav.locator("[aria-current='page']")).toHaveText(
+      /overview/i,
+    );
+
+    await expect(page.getByLabel(/signed in as/i)).toContainText(/syed/i);
+    await expect(page.getByLabel(/signed in as/i)).toContainText(
+      /admin@syed\.dev/i,
+    );
+  });
+
+  test("admin projects page lists projects and exposes a new-project form", async ({
+    page,
+  }) => {
+    await page.goto("/admin/projects");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /project catalog/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/dirham/i).first()).toBeVisible();
+
+    const newBtn = page.getByRole("button", { name: /\+ new project/i });
+    await newBtn.click();
+    await expect(
+      page.getByRole("heading", { level: 3, name: /^new project$/i }),
+    ).toBeVisible();
+
+    await page.getByRole("button", { name: /save project/i }).click();
+    await expect(
+      page.getByRole("status").filter({ hasText: /highlighted fields/i }),
+    ).toBeVisible();
+  });
+
+  test("admin leads page filters by status", async ({ page }) => {
+    await page.goto("/admin/leads");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /incoming briefs/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/showing 8 leads/i)).toBeVisible();
+
+    await page.goto("/admin/leads?status=new");
+    await expect(page.getByText(/showing 2 leads marked "new"/i)).toBeVisible();
+  });
+
+  test("admin blog page lists posts and exposes a new-post form", async ({
+    page,
+  }) => {
+    await page.goto("/admin/blog");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /post manager/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/shipping a portfolio in next\.js/i),
+    ).toBeVisible();
+
+    await page.getByRole("button", { name: /\+ new post/i }).click();
+    await expect(
+      page.getByRole("heading", { level: 3, name: /^new post$/i }),
+    ).toBeVisible();
+  });
+
+  test("admin endorsements queue approves a pending item", async ({ page }) => {
+    await page.goto("/admin/endorsements");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /moderation queue/i }),
+    ).toBeVisible();
+
+    const pendingTab = page.getByRole("tab", { name: /pending/i });
+    await expect(pendingTab).toHaveAttribute("aria-selected", "true");
+
+    const firstApprove = page.getByRole("button", { name: /^approve$/i }).first();
+    await firstApprove.click();
+
+    await page.getByRole("tab", { name: /^approved/i }).click();
+    await expect(page.getByText(/rashed al-mansoori/i)).toBeVisible();
+  });
+
+  test("admin users page lists users with role badges", async ({ page }) => {
+    await page.goto("/admin/users");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /user directory/i }),
+    ).toBeVisible();
+    const table = page.getByRole("table");
+    await expect(table.getByText(/admin@syed\.dev/i)).toBeVisible();
+    await expect(table.getByText(/suspicious account/i)).toBeVisible();
+  });
+
+  test("admin analytics page renders three chart panels", async ({ page }) => {
+    await page.goto("/admin/analytics");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /the numbers behind the site/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", { name: /new accounts/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", { name: /where briefs come from/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", { name: /per project/i }),
+    ).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// User dashboard — middleware-protected; runs with the seeded demo user's session.
+// ---------------------------------------------------------------------------
+
+test.describe("user dashboard (authenticated)", () => {
+  test.use({ storageState: userState });
+
+  test("dashboard shell renders sidebar with 5 items and marks Overview active", async ({
+    page,
+  }) => {
+    await page.goto("/dashboard");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /welcome back, demo user/i }),
+    ).toBeVisible();
+
+    const desktopSidebar = page.getByRole("complementary", { name: "Dashboard" });
+    const sectionsNav = desktopSidebar.getByRole("navigation", {
+      name: /dashboard sections$/i,
+    });
+    const links = sectionsNav.getByRole("link");
+    await expect(links).toHaveCount(5);
+
+    const expected = [
+      "Overview",
+      "Bookmarks",
+      "Endorsements",
+      "Quote requests",
+      "Profile",
+    ];
+    for (const label of expected) {
+      await expect(
+        sectionsNav.getByRole("link", { name: new RegExp(label, "i") }),
+      ).toBeVisible();
+    }
+
+    await expect(sectionsNav.locator("[aria-current='page']")).toHaveText(
+      /overview/i,
+    );
+
+    await expect(page.getByLabel(/signed in as/i)).toContainText(/demo user/i);
+    await expect(page.getByLabel(/signed in as/i)).toContainText(
+      /demo@syed\.dev/i,
+    );
+  });
+
+  test("profile dropdown opens, lists items, and closes on Escape", async ({
+    page,
+  }) => {
+    await page.goto("/dashboard");
+
+    const trigger = page.getByRole("button", {
+      name: /signed in as demo user/i,
+    });
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    const menu = page.getByRole("menu", { name: /profile menu/i });
+    await expect(
+      menu.getByRole("menuitem", { name: /view profile/i }),
+    ).toBeVisible();
+    await expect(
+      menu.getByRole("menuitem", { name: /visit public site/i }),
+    ).toBeVisible();
+    await expect(
+      menu.getByRole("menuitem", { name: /sign out/i }),
+    ).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("dashboard overview shows at-a-glance stats and recent bookmarks", async ({
+    page,
+  }) => {
+    await page.goto("/dashboard");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /welcome back, demo/i }),
+    ).toBeVisible();
+
+    const glance = page.getByRole("region", { name: /at a glance/i });
+    await expect(glance.getByRole("link", { name: /bookmarks/i })).toBeVisible();
+    await expect(glance.getByRole("link", { name: /endorsements/i })).toBeVisible();
+    await expect(glance.getByRole("link", { name: /open quotes/i })).toBeVisible();
+
+    const recent = page.getByRole("region", { name: /recent bookmarks/i });
+    await expect(
+      recent.getByRole("link", { name: /^hotel inventory$/i }),
+    ).toBeVisible();
+  });
+
+  test("dashboard bookmarks lists saved projects", async ({ page }) => {
+    await page.goto("/dashboard/bookmarks");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /projects you.ve saved/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /^groceri$/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /remove restaurant pos bookmark/i }),
+    ).toBeVisible();
+  });
+
+  test("dashboard endorsements form validates then accepts a submission", async ({
+    page,
+  }) => {
+    await page.goto("/dashboard/endorsements");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /endorse what you.ve actually used/i }),
+    ).toBeVisible();
+
+    const form = page.locator("form").filter({ hasText: /endorse a project/i });
+    await form.getByRole("button", { name: /submit endorsement/i }).click();
+    await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
+
+    // Project and skill are now DB-backed <select>s (project values are Mongo
+    // ids, so target by visible label).
+    await form.getByLabel(/^project$/i).selectOption({ label: "Dirham" });
+    await form.getByLabel(/^skill$/i).selectOption("Next.js");
+    await form
+      .getByLabel(/your endorsement/i)
+      .fill("Filed VAT in under ten minutes — best fintech UX I've used this year.");
+    await form.getByRole("button", { name: /submit endorsement/i }).click();
+    // 201 on a fresh seed; 409 if this skill was already endorsed on a prior run.
+    await expect(form.getByRole("status")).toContainText(
+      /queued for review|already endorsed/i,
+    );
+  });
+
+  test("dashboard quotes form validates then accepts a submission", async ({
+    page,
+  }) => {
+    await page.goto("/dashboard/quotes");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /briefs and where they stand/i }),
+    ).toBeVisible();
+
+    const form = page.locator("form").filter({ hasText: /send a new brief/i });
+    await form.getByRole("button", { name: /send brief/i }).click();
+    await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
+
+    await form.getByLabel(/^title$/i).fill("Bakery storefront");
+    await form
+      .getByLabel(/^project type$/i)
+      .selectOption("Landing page or storefront");
+    await form.getByLabel(/^budget$/i).selectOption("AED 5k – 10k");
+    await form.getByLabel(/^timeline$/i).selectOption("3–4 weeks");
+    await form
+      .getByLabel(/^brief$/i)
+      .fill("Small bakery in JLT. Need pickup orders with WhatsApp confirmation.");
+    await form.getByRole("button", { name: /send brief/i }).click();
+    await expect(form.getByRole("status")).toContainText(/sent/i);
+  });
+
+  test("dashboard profile editor validates and saves", async ({ page }) => {
+    await page.goto("/dashboard/profile");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /your account/i }),
+    ).toBeVisible();
+
+    const form = page.locator("form").filter({ hasText: /save changes/i });
+    await form.getByLabel(/^avatar$/i).fill("not-a-url");
+    await form.getByRole("button", { name: /save changes/i }).click();
+    await expect(form.getByRole("status")).toContainText(/highlighted fields/i);
+
+    await form.getByLabel(/^avatar$/i).fill("https://example.com/me.png");
+    await form.getByRole("button", { name: /save changes/i }).click();
+    await expect(form.getByRole("status")).toContainText(/profile saved/i);
+  });
 });

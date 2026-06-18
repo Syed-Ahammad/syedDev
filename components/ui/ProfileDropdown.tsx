@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import { useEffect, useId, useRef, useState } from "react";
 
 type DropdownItem = {
@@ -96,14 +97,17 @@ export function ProfileDropdown({ name, email, initials, accent, items }: Props)
             ))}
           </ul>
           <div className="border-t border-border">
-            <Link
-              href="/"
+            <button
+              type="button"
               role="menuitem"
-              onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-coral transition-colors hover:bg-coral/10"
+              onClick={() => {
+                setOpen(false);
+                void signOut({ callbackUrl: "/" });
+              }}
+              className="block w-full px-4 py-2.5 text-left font-mono text-[0.7rem] uppercase tracking-[0.14em] text-coral transition-colors hover:bg-coral/10"
             >
               Sign out
-            </Link>
+            </button>
           </div>
         </div>
       )}
