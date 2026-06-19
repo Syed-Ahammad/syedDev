@@ -36,6 +36,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${project.name} — Syed Ahammad`,
     description: project.tagline,
+    alternates: { canonical: `/projects/${slug}` },
+    openGraph: {
+      type: "article",
+      url: `/projects/${slug}`,
+      title: `${project.name} — Syed Ahammad`,
+      description: project.tagline,
+    },
   };
 }
 

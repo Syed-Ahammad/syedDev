@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Create an account — Syed Ahammad",
   description:
     "Register to bookmark projects, endorse work, and follow up on quote requests.",
+  alternates: { canonical: "/register" },
 };
 
 export default function RegisterPage() {

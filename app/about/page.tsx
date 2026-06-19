@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "About — Syed Ahammad",
   description:
     "Full-stack developer in Dubai with a background in hospitality and inventory operations. The story, the principles, and the stack I work in.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

@@ -28,6 +28,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${post.title} — Syed Ahammad`,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      type: "article",
+      url: `/blog/${slug}`,
+      title: `${post.title} — Syed Ahammad`,
+      description: post.excerpt,
+      publishedTime: post.publishedAt,
+    },
   };
 }
 

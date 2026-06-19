@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Projects — Syed Ahammad",
   description:
     "Everything I've built so far — products shipped, projects in progress, and ideas being sketched.",
+  alternates: { canonical: "/projects" },
 };
 
 type PageProps = {

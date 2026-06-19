@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
+import { getPublishedSlugs } from "@/lib/projects";
+import { getPublishedBlogSlugs } from "@/lib/blog";
 import { MOCK_PROJECTS } from "@/lib/mock-projects";
 import { MOCK_BLOG_POSTS } from "@/lib/mock-blog";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://syed.dev";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -17,18 +19,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/register`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const projectRoutes: MetadataRoute.Sitemap = MOCK_PROJECTS.filter(
-    (p) => p.status !== "draft",
-  ).map((p) => ({
-    url: `${SITE_URL}/projects/${p.slug}`,
+  // Pull live published slugs; fall back to the mock data if the DB is
+  // unreachable (e.g. building without MONGODB_URI) so the build never fails.
+  let projectSlugs: string[];
+  let blogSlugs: string[];
+  try {
+    [projectSlugs, blogSlugs] = await Promise.all([
+      getPublishedSlugs(),
+      getPublishedBlogSlugs(),
+    ]);
+  } catch {
+    projectSlugs = MOCK_PROJECTS.filter((p) => p.status !== "draft").map((p) => p.slug);
+    blogSlugs = MOCK_BLOG_POSTS.map((p) => p.slug);
+  }
+
+  const projectRoutes: MetadataRoute.Sitemap = projectSlugs.map((slug) => ({
+    url: `${SITE_URL}/projects/${slug}`,
     lastModified: now,
     changeFrequency: "monthly",
     priority: 0.6,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = MOCK_BLOG_POSTS.map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+  const blogRoutes: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
+    url: `${SITE_URL}/blog/${slug}`,
+    lastModified: now,
     changeFrequency: "monthly",
     priority: 0.6,
   }));

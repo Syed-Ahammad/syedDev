@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Sign in — Syed Ahammad",
   description:
     "Sign in to manage bookmarks, endorsements and quote requests. Demo accounts available.",
+  alternates: { canonical: "/login" },
 };
 
 export default function LoginPage() {

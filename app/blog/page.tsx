@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Blog — Syed Ahammad",
   description:
     "Notes from what I'm building — stack decisions, career reflections, and backend lessons I wish I'd learned sooner.",
+  alternates: { canonical: "/blog" },
 };
 
 type PageProps = {

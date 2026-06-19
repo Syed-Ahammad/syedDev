@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Contact — Syed Ahammad",
   description:
     "Get in touch about a project, an audit, or a build review. I reply to every serious enquiry within 24 hours.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
