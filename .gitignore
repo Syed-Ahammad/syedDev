@@ -17,6 +17,9 @@
 /playwright/.cache/
 /playwright/.auth/
 
+# generated reports (lighthouse via `npm run lighthouse`)
+/reports/
+
 # next.js
 /.next/
 /out/

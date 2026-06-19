@@ -3,10 +3,10 @@
 Run before every release.
 
 ## Automated (must pass before manual QA)
-- [ ] `npm run lint` clean
-- [ ] `npm run test` — Vitest unit suite (validations, ratelimit, auth role guards, components) green
-- [ ] `npm run test:e2e` — Playwright `contact`, `auth`, `demo-login`, `projects`, `endorsements`, `bookmarks`, `blog`, `dark-mode` specs green
-- [ ] `npm run build` — no type errors
+- [x] `npm run lint` clean
+- [x] `npm run test` — Vitest unit suite (validations, ratelimit, auth role guards, components) green
+- [x] `npm run test:e2e` — Playwright `contact`, `auth`, `demo-login`, `projects`, `endorsements`, `bookmarks`, `blog`, `dark-mode` specs green
+- [x] `npm run build` — no type errors
 
 ## Public site
 - [ ] Home page renders ≥8 sections in order

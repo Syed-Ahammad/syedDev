@@ -74,7 +74,7 @@ Each step is sized to finish in one sitting, leaves the app working, and ends wi
 - [x] 4.1 Toasts, loading skeletons, empty states across every page
 - [x] 4.2 SEO: metadata, OG image, sitemap (auto-includes blog + projects), robots.txt
 - [x] 4.2a Write Playwright specs: `e2e/contact`, `e2e/auth`, `e2e/demo-login`, `e2e/projects` (search/filter/sort), `e2e/endorsements`, `e2e/bookmarks`, `e2e/blog`, `e2e/dark-mode`
-- [ ] 4.3 Full testing-checklist pass (`npm run lint && npm run test && npm run test:e2e && npm run build`)
+- [x] 4.3 Full testing-checklist pass (`npm run lint && npm run test && npm run test:e2e && npm run build`)
 - [ ] 4.4 Real content: project screenshots, CV link, real socials, 3+ real blog posts, 5+ FAQ
 - [ ] 4.5 Deploy → custom domain → **v1.0.0** 🎉
 - [ ] 4.6 Update `rubric-compliance.md` with live demo URL + final screenshot links
